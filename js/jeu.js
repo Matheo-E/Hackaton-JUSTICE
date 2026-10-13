@@ -81,7 +81,7 @@ function tempsEcoule() {
   const cas = etat.cas[etat.index];
   etat.resultats.push({ cas, choix: null, correct: false, expire: true,
     indices: etat.indicesObtenus, questions: etat.posees.size,
-    penalites: etat.penalites, tempsRestant: 0, appels: etat.appels });
+    penalites: etat.penalites, tempsRestant: 0, appels: etat.appels, documentsDemandes: etat.documentsRecus.size });
   afficherFeedback(cas, null, false);
 }
 
@@ -118,19 +118,60 @@ async function charger() {
 
 // Guide de la résolution amiable : tableau « Je vois… / J'envoie… », détail des modes, bon à savoir.
 function remplirManuel() {
+  const nomOrientation = (m) => m.id === "mediateur"
+    ? '<button type="button" class="lien-mediateurs" data-guide-mediateurs>Médiateur ›</button>' : echapper(m.nom);
   const lignes = etat.modes.filter((m) => m.je_vois)
-    .map((m) => `<tr><td>${echapper(m.je_vois)}</td><td><b>${echapper(m.nom)}</b></td></tr>`).join("");
+    .map((m) => `<tr><td>${echapper(m.je_vois)}</td><td><b>${nomOrientation(m)}</b></td></tr>`).join("");
   let html = lignes
     ? `<table class="livre-table"><thead><tr><th>Je vois…</th><th>J'envoie…</th></tr></thead><tbody>${lignes}</tbody></table>`
     : "";
   if (etat.livre && etat.livre.ordre) html += `<p class="livre-ordre">${echapper(etat.livre.ordre)}</p>`;
   $("manuel-page-gauche").innerHTML = html;
   // Page de droite : le détail des 4 choix, puis « Bon à savoir ».
-  let droite = `<dl>${etat.modes.map((m) => `<dt>${echapper(m.nom)}</dt><dd>${echapper(m.description)}</dd>`).join("")}</dl>`;
+  let droite = `<dl>${etat.modes.map((m) => `<dt>${nomOrientation(m)}</dt><dd>${echapper(m.description)}${m.points
+    ? `<ul class="guide-points">${m.points.map((p) => `<li>${echapper(p)}</li>`).join("")}</ul>` : ""}${m.source
+    ? `<a class="guide-source" href="${echapper(m.source)}" target="_blank" rel="noopener">Source officielle ↗</a>` : ""}</dd>`).join("")}</dl>`;
   if (etat.livre && etat.livre.bon_a_savoir && etat.livre.bon_a_savoir.length)
     droite += `<h3>Bon à savoir</h3><ul class="bon-a-savoir">${
       etat.livre.bon_a_savoir.map((b) => `<li>${echapper(b)}</li>`).join("")}</ul>`;
+  const types = etat.livre?.mediateurs || [];
+  droite += `<details id="guide-mediateurs" class="guide-mediateurs"><summary>Les types de médiateurs</summary>${types.map((t) =>
+    `<details class="guide-type-mediateur"><summary>${echapper(t.nom)}</summary><p>${echapper(t.pour)}</p><p><b>Coût :</b> ${echapper(t.cout)}</p><p>${echapper(t.precision)}</p><a class="guide-source" href="${echapper(t.source)}" target="_blank" rel="noopener">Source officielle ↗</a></details>`).join("")}</details>`;
   $("manuel-page-droite").innerHTML = droite;
+  remplirTypesMediateurs();
+}
+
+function remplirTypesMediateurs() {
+  const types = etat.livre?.mediateurs || [];
+  $("liste-types-mediateurs").innerHTML = types.map((t, i) => `<button type="button" class="papier-proposition${etat.mediateurChoisi === t ? " selectionne" : ""}" data-proposition-mediateur="${i}" aria-pressed="${etat.mediateurChoisi === t}">
+    <span class="papier-entete">Proposition d’orientation</span><strong>${echapper(t.libelle || t.nom)}</strong>
+    <span class="papier-pied">${etat.mediateurChoisi === t ? "Sur votre bureau" : "Choisir ce papier"}</span></button>`).join("") || '<p>Aucune proposition disponible pour le moment.</p>';
+}
+
+function ouvrirTypesMediateurs() {
+  remplirTypesMediateurs();
+  ouvrirModale("types-mediateurs");
+}
+
+function choisirTypeMediateur(index) {
+  if (!actualiserChrono()) return;
+  const type = etat.livre?.mediateurs?.[index];
+  if (!type) return;
+  etat.mediateurChoisi = type;
+  actualiserFeuilleMediateur();
+  fermerModales();
+  etat.feuilleMediateur.focus({ preventScroll: true });
+}
+
+function actualiserFeuilleMediateur() {
+  const feuille = etat.feuilleMediateur;
+  if (!feuille) return;
+  const type = etat.mediateurChoisi;
+  const nom = type ? type.libelle || type.nom : "Médiateur";
+  feuille.innerHTML = `<strong>${echapper(nom)}</strong><small>${type ? "Glissez le tampon pour valider" : "Choisir un type de médiateur"}</small><img class="sceau" alt="">`;
+  feuille.setAttribute("aria-label", type ? `Tamponner : ${nom}` : "Choisir un type de médiateur");
+  feuille.classList.toggle("mediateur-precise", !!type);
+  $("btn-changer-mediateur").hidden = !type;
 }
 
 // Une feuille d'orientation par mode, posée sur le bureau : on y glisse le tampon.
@@ -147,10 +188,12 @@ function creerFeuilles() {
       e.stopPropagation(); // ne pas faire avancer le dialogue
       // Clavier (Entrée/Espace, e.detail === 0) : tamponne directement, pour l'accessibilité.
       // Souris/tactile : rappelle qu'il faut glisser le tampon.
-      if (e.detail === 0) tamponner(m.id, b);
+      if (m.id === "mediateur" && !etat.mediateurChoisi) ouvrirTypesMediateurs();
+      else if (e.detail === 0) tamponner(m.id, b);
       else indiquerTampon();
     });
     zone.appendChild(b);
+    if (m.id === "mediateur") etat.feuilleMediateur = b;
   });
 }
 
@@ -207,8 +250,9 @@ function afficherCas() {
   etat.pos = 0;
   etat.posees = new Set();
   etat.indicesObtenus = 0;    // nombre d'indices déjà donnés par Papi pour ce cas
+  etat.documentsRecus = new Set();
   $("progression").textContent = `Dossier ${etat.index + 1} / ${etat.cas.length}`;
-  $("score").textContent = `Bonnes orientations : ${etat.resultats.filter((r) => r.correct).length}`;
+  $("score").textContent = `Dossiers explorés : ${etat.resultats.length}`;
 
   $("visiteurs").innerHTML = cas.personnages
     .map((p) => `<div class="visiteur" data-nom="${echapper(p.nom)}" role="button" tabindex="0"
@@ -219,10 +263,12 @@ function afficherCas() {
     .join("");
   // Remise à zéro du bureau : tampon à sa place, feuilles vierges.
   etat.decision = false;
+  etat.mediateurChoisi = null;
+  actualiserFeuilleMediateur();
   $("tampon").style.translate = "";
   $("tampon").className = "tampon-outil";
   $("plan").classList.remove("decide");
-  document.querySelectorAll(".feuille").forEach((f) => f.classList.remove("tamponnee", "bonne", "mauvaise"));
+  document.querySelectorAll(".feuille").forEach((f) => f.classList.remove("tamponnee"));
   etat.selection = null;
   document.querySelectorAll(".visiteur").forEach((v) => {
     v.addEventListener("click", () => choisirPersonnage(v.dataset.nom));
@@ -308,7 +354,7 @@ function creerQuestions() {
   const cas = etat.cas[etat.index];
   const zone = $("liste-questions");
   zone.innerHTML = "";
-  $("questions").hidden = !cas.questions.length;
+  $("questions").hidden = !cas.questions.length && !cas.documents.some((d) => d.aDemander);
   cas.questions.forEach((q, i) => {
     const b = document.createElement("button");
     b.className = "question";
@@ -316,6 +362,27 @@ function creerQuestions() {
     b.addEventListener("click", () => poserQuestion(i, b));
     zone.appendChild(b);
   });
+  cas.documents.filter((d) => d.aDemander).forEach((d) => {
+    const b = document.createElement("button");
+    b.className = "question question-piece";
+    b.textContent = `Pouvez-vous me transmettre « ${d.titre} » ?`;
+    b.addEventListener("click", () => demanderDocument(d, b));
+    zone.appendChild(b);
+  });
+}
+
+function demanderDocument(document, bouton) {
+  if (!actualiserChrono() || etat.pos < etat.file.length || etat.documentsRecus.has(document)) return;
+  const cas = etat.cas[etat.index];
+  const qui = document.proprietaires.length ? document.proprietaires : [cas.personnages[0].nom];
+  etat.documentsRecus.add(document);
+  bouton.disabled = true;
+  bouton.classList.add("posee");
+  etat.file.push({ qui: [], texte: bouton.textContent, joueur: true });
+  etat.file.push({ qui, texte: "Oui, je l’ai avec moi. Je vous le transmets pour compléter le dossier." });
+  remplirDossier();
+  afficherReplique();
+  $("scene").focus({ preventScroll: true });
 }
 
 function poserQuestion(i, bouton) {
@@ -357,12 +424,17 @@ function remplirDossier() {
   pile.innerHTML = "";
   // Un document sans propriétaire reste visible pour tous les personnages.
   etat.docs = etat.selection
-    ? cas.documents.filter((d) => !d.proprietaires.length || d.proprietaires.includes(etat.selection))
+    ? cas.documents.filter((d) => (!d.proprietaires.length || d.proprietaires.includes(etat.selection)) &&
+      (!d.aDemander || etat.documentsRecus.has(d)))
     : [];
   etat.docOuvert = 0;
   $("titre-documents").textContent = etat.selection ? `Documents de ${etat.selection}` : "Documents du client";
   if (!etat.selection) pile.innerHTML = `<p class="vide">Cliquez sur un personnage pour voir ses documents.</p>`;
   else if (!etat.docs.length) pile.innerHTML = `<p class="vide">Ce personnage n’a apporté aucun document.</p>`;
+  if (etat.selection && cas.documents.some((d) => d.aDemander && !etat.documentsRecus.has(d) &&
+    (!d.proprietaires.length || d.proprietaires.includes(etat.selection)))) {
+    pile.innerHTML = '<p class="vide dossier-incomplet">Dossier incomplet : posez une question pour obtenir les pièces manquantes.</p>';
+  }
   etat.docs.forEach((d, i) => {
     const b = document.createElement("button");
     b.className = "miniature";
@@ -431,13 +503,18 @@ function appelerPapi() {
 }
 
 // Sceaux affichés sur la scène puis sur l'écran de feedback.
-const SCEAU = { bonne: "assets/scene/certified.png", mauvaise: "assets/scene/banned.png" };
+const SCEAU = "assets/scene/orientation.svg";
 const DUREE_COUP_TAMPON = 1300; // ms : coup de tampon + sceau visible avant le feedback
 
 // Le tampon a été déposé sur la feuille d'un mode : on frappe, on laisse le sceau, puis feedback.
 function tamponner(modeId, feuille) {
   if (etat.decision || $("plan").classList.contains("verrouille")) return; // un seul coup par dossier
   if (!actualiserChrono()) return;
+  if (modeId === "mediateur" && !etat.mediateurChoisi) {
+    $("tampon").style.translate = "";
+    ouvrirTypesMediateurs();
+    return;
+  }
   etat.decision = true;
   arreterChrono();
   const cas = etat.cas[etat.index];
@@ -445,11 +522,12 @@ function tamponner(modeId, feuille) {
   arreterEcriture();
   fermerModales();
   etat.resultats.push({ cas, choix: modeId, correct, indices: etat.indicesObtenus, questions: etat.posees.size,
-    penalites: etat.penalites, tempsRestant: etat.tempsRestant, appels: etat.appels });
+    penalites: etat.penalites, tempsRestant: etat.tempsRestant, appels: etat.appels, documentsDemandes: etat.documentsRecus.size,
+    mediateur: modeId === "mediateur" ? etat.mediateurChoisi.nom : null });
 
   // Animation : le tampon frappe (classe .frappe), la feuille reçoit le sceau.
-  feuille.querySelector(".sceau").src = SCEAU[correct ? "bonne" : "mauvaise"];
-  feuille.classList.add("tamponnee", correct ? "bonne" : "mauvaise");
+  feuille.querySelector(".sceau").src = SCEAU;
+  feuille.classList.add("tamponnee");
   $("tampon").classList.add("frappe");
   $("plan").classList.add("decide");
   $("questions").classList.add("verrouille");
@@ -458,20 +536,76 @@ function tamponner(modeId, feuille) {
 }
 
 function afficherFeedback(cas, modeId, correct) {
-  $("feedback-sceau").src = SCEAU[correct ? "bonne" : "mauvaise"];
-  $("feedback-sceau").alt = correct ? "Certifié" : "Refusé";
+  const resultat = etat.resultats.findLast((r) => r.cas === cas);
+  const nomChoisi = resultat?.mediateur || nomDuMode(modeId);
+  $("feedback-sceau").src = SCEAU;
+  $("feedback-sceau").alt = "Orientation retenue";
+  $("feedback-sceau").hidden = modeId === null;
 
-  $("feedback-titre").textContent = modeId === null ? "Temps écoulé !" : correct ? "Bonne orientation !" : "Mauvaise orientation";
-  $("feedback-titre").className = correct ? "bonne" : "mauvaise";
+  $("feedback-titre").textContent = modeId === null ? "Prenons le temps d’y réfléchir" : correct ? "Une orientation adaptée à cette situation" : "Une autre piste à explorer";
+  $("feedback-titre").className = "";
   $("feedback-reponse").innerHTML = modeId === null
-    ? `Ce dossier n’a pas été traité à temps. La bonne orientation était : <b>${echapper(nomDuMode(cas.reponse))}</b>.`
-    : correct
-    ? `Vous avez choisi : <b>${echapper(nomDuMode(modeId))}</b>.`
-    : `Vous avez choisi : <b>${echapper(nomDuMode(modeId))}</b>. La bonne réponse était : <b>${echapper(nomDuMode(cas.reponse))}</b>.`;
+    ? `Le temps est écoulé. Pour cette situation, l’orientation la plus adaptée est : <b>${echapper(nomDuMode(cas.reponse))}</b>.`
+    : `Vous avez proposé : <b>${echapper(nomChoisi)}</b>. ${correct
+      ? "C’est la piste la plus adaptée au contexte présenté."
+      : `Pour cette situation, la piste la plus adaptée est : <b>${echapper(nomDuMode(cas.reponse))}</b>. Voici pourquoi.`}`;
   $("feedback-explication").textContent = cas.explication;
   $("btn-suivant").textContent =
     etat.index + 1 < etat.cas.length ? "Dossier suivant" : "Voir le bilan";
   afficherEcran("ecran-feedback");
+  chargerStatistiques(cas, modeId);
+}
+
+function htmlStatistiques(stats, choix) {
+  if (!stats.total) return '<p class="vide">Aucun choix enregistré pour cette situation pour le moment.</p>';
+  const lignes = etat.modes.map((mode, index) => {
+    const part = (stats.choix[mode.id] || 0) * 100 / stats.total;
+    return { mode, index, pourcentage: Math.floor(part), reste: part % 1 };
+  });
+  // Arrondis répartis pour afficher exactement 100 % au total.
+  const manquant = 100 - lignes.reduce((s, l) => s + l.pourcentage, 0);
+  [...lignes].sort((a, b) => b.reste - a.reste || a.index - b.index)
+    .slice(0, manquant).forEach((l) => l.pourcentage++);
+  return `<p class="stats-total">${stats.total} réponse${stats.total > 1 ? "s" : ""} recueillie${stats.total > 1 ? "s" : ""}${choix ? ", dont la vôtre" : ""}</p><ul class="stats-choix">${lignes.map((l) =>
+    `<li><div class="stats-etiquette"><span>${echapper(l.mode.nom)}${l.mode.id === choix ? ' <small>Votre choix</small>' : ""}</span><b>${l.pourcentage} %</b></div><progress max="100" value="${l.pourcentage}" aria-label="${echapper(l.mode.nom)} : ${l.pourcentage} %"></progress></li>`).join("")}</ul>`;
+}
+
+let demandeStatistiques = 0;
+async function chargerStatistiques(cas, choix) {
+  const demande = ++demandeStatistiques;
+  const resultat = etat.resultats.findLast((r) => r.cas === cas);
+  $("feedback-statistiques").textContent = "Chargement des choix des joueurs…";
+  if (new URLSearchParams(location.search).has("test")) {
+    $("feedback-statistiques").textContent = "Les parties de test ne participent pas aux statistiques.";
+    return;
+  }
+  const controleur = new AbortController();
+  const attente = setTimeout(() => controleur.abort(), 6000);
+  try {
+    let options = { cache: "no-store", signal: controleur.signal };
+    let url = `api/statistiques?cas_id=${encodeURIComponent(cas.id)}`;
+    if (choix) {
+      // Le même identifiant rend une nouvelle tentative d'envoi sans doublon.
+      resultat.participation ||= Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) => n.toString(16).padStart(2, "0")).join("");
+      url = "api/statistiques";
+      options = { ...options, method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cas_id: cas.id, choix, participation: resultat.participation }) };
+    }
+    const reponse = await fetch(url, options);
+    if (!reponse.ok) throw new Error("Statistiques indisponibles");
+    const stats = await reponse.json();
+    if (!Number.isInteger(stats.total) || stats.total < 0 || !stats.choix ||
+      etat.modes.some((m) => !Number.isInteger(stats.choix[m.id]) || stats.choix[m.id] < 0) ||
+      etat.modes.reduce((s, m) => s + stats.choix[m.id], 0) !== stats.total) throw new Error("Statistiques invalides");
+    if (demande !== demandeStatistiques || !etat.resultats.includes(resultat)) return;
+    resultat.statistiques = stats;
+    $("feedback-statistiques").innerHTML = htmlStatistiques(stats, choix);
+    if ($("ecran-recap").classList.contains("actif")) afficherRecap();
+  } catch {
+    if (demande === demandeStatistiques) $("feedback-statistiques").textContent = "Les choix des joueurs sont indisponibles pour le moment.";
+  } finally {
+    clearTimeout(attente);
+  }
 }
 
 function suivant() {
@@ -481,15 +615,18 @@ function suivant() {
 }
 
 function afficherRecap() {
-  const bons = etat.resultats.filter((r) => r.correct).length;
-  $("recap-score").textContent = `${bons} / ${etat.resultats.length} bonnes orientations`;
+  $("recap-score").textContent = `${etat.resultats.length} dossier${etat.resultats.length > 1 ? "s" : ""} exploré${etat.resultats.length > 1 ? "s" : ""}`;
   $("recap-liste").innerHTML = etat.resultats
-    .map((r) => `<li class="${r.correct ? "ok" : "ko"}">
-        <b>${echapper(r.cas.personnages.map((p) => p.nom).join(" & "))}</b> → ${echapper(nomDuMode(r.cas.reponse))}<br>
-        <small>${r.expire ? "Temps écoulé — dossier non traité" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s))</small>
+    .map((r) => `<li>
+        <b>${echapper(r.cas.personnages.map((p) => p.nom).join(" & "))}</b><br>
+        ${r.choix ? `Votre proposition : ${echapper(r.mediateur || nomDuMode(r.choix))}<br>` : ""}
+        Piste la plus adaptée : ${echapper(nomDuMode(r.cas.reponse))}<br>
+        <small>${r.expire ? "Temps écoulé — une piste à reprendre" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s))</small>
         ${r.cas.questions.length ? `<small>Questions posées : ${r.questions} / ${r.cas.questions.length}</small>` : ""}
+        ${r.cas.documents?.some((d) => d.aDemander) ? `<small>Pièces complémentaires demandées : ${r.documentsDemandes || 0} / ${r.cas.documents.filter((d) => d.aDemander).length}</small>` : ""}
         ${r.cas.indices.length ? `<small>Conseils de Papi utilisés : ${r.indices} / ${r.cas.indices.length}</small>` : ""}
-        <small>${echapper(r.cas.explication)}</small></li>`)
+        <small>${echapper(r.cas.explication)}</small>
+        ${r.statistiques ? `<div class="stats-recap"><h3>Les choix des joueurs</h3>${htmlStatistiques(r.statistiques, r.choix)}</div>` : ""}</li>`)
     .join("");
   afficherEcran("ecran-recap");
 }
@@ -526,6 +663,19 @@ document.addEventListener("keydown", (e) => {
 });
 $("doc-precedent").addEventListener("click", () => ouvrirDocument(etat.docOuvert - 1));
 $("doc-suivant").addEventListener("click", () => ouvrirDocument(etat.docOuvert + 1));
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-guide-mediateurs]")) {
+    e.preventDefault();
+    $("guide-mediateurs").open = true;
+    $("guide-mediateurs").scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  const papier = e.target.closest("[data-proposition-mediateur]");
+  if (papier) {
+    e.preventDefault();
+    choisirTypeMediateur(Number(papier.dataset.propositionMediateur));
+  }
+});
+$("btn-changer-mediateur").addEventListener("click", (e) => { e.stopPropagation(); ouvrirTypesMediateurs(); });
 
 // Faire avancer le dialogue : clic sur la scène, Entrée ou Espace.
 $("scene").addEventListener("click", repliqueSuivante);

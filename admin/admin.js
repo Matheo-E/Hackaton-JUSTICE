@@ -91,7 +91,7 @@ function verifier(c) {
     if (!d.titre.trim()) ajouter("documents", `Document ${i + 1} : donnez-lui un titre.`);
     if (!d.image && !d.texte.trim()) ajouter("documents", `Document ${i + 1} : choisissez une image ou écrivez son contenu.`);
   });
-  if (!c.reponse) ajouter("orientation", "Choisissez la bonne orientation.");
+  if (!c.reponse) ajouter("orientation", "Choisissez l’orientation la plus adaptée.");
   if (!c.explication.trim()) ajouter("explication", "Écrivez l'explication montrée au joueur.");
   // Filet de sécurité : les règles exactes du jeu (js/cas.js).
   if (!pb.length) validerCas(normaliserCas(versJeu(c)), etat.modes.map((m) => m.id))
@@ -276,8 +276,8 @@ function htmlEditeur(c) {
     `<label class="ligne"><input class="champ" data-k="titre" data-champ="nom_admin" value="${echapper(c.nom_admin)}"
        placeholder="Ex. : Le manguier qui dépasse"></label>`));
 
-  html.push(section("orientation", "Bonne orientation", "Où le joueur doit-il envoyer ces personnes ?",
-    `<div class="choix-orientation" role="radiogroup" aria-label="Bonne orientation">${etat.modes.map((m) => `
+  html.push(section("orientation", "Orientation la plus adaptée", "Où le joueur doit-il envoyer ces personnes ?",
+    `<div class="choix-orientation" role="radiogroup" aria-label="Orientation la plus adaptée">${etat.modes.map((m) => `
       <label class="orientation${c.reponse === m.id ? " choisie" : ""}">
         <input type="radio" name="reponse" value="${m.id}" data-k="reponse-${m.id}" data-champ="reponse" ${c.reponse === m.id ? "checked" : ""}>
         <strong>${echapper(m.nom)}</strong>
@@ -343,6 +343,12 @@ function htmlEditeur(c) {
             <textarea class="champ" rows="3" data-k="dt-${i}" data-liste="documents" data-i="${i}" data-cle="texte"
               placeholder="${d.image ? "Ce qui est écrit sur l'image (lu par les lecteurs d'écran)" : "Contenu du document, affiché tel quel"}"
               aria-label="Contenu du document ${i + 1}">${echapper(d.texte)}</textarea>
+            <label>Transmission du document
+              <select class="champ" data-k="demande-${i}" data-liste="documents" data-i="${i}" data-cle="a_demander">
+                <option value="false" ${d.a_demander === true ? "" : "selected"}>Disponible dès le début</option>
+                <option value="true" ${d.a_demander === true ? "selected" : ""}>Le joueur doit demander la pièce</option>
+              </select>
+            </label>
           </div>
         </div>
       </div>`).join("") || vide("Aucun document."),
@@ -471,7 +477,7 @@ $("editeur").addEventListener("input", (e) => {
     if (el.dataset.cle) {
       const nom = el.dataset.liste === "personnages" && el.dataset.cle === "nom";
       if (nom) renommer(c, liste[i].nom, el.value);
-      liste[i][el.dataset.cle] = el.value;
+      liste[i][el.dataset.cle] = el.dataset.cle === "a_demander" ? el.value === "true" : el.value;
       if (nom) majNoms();
     } else liste[i] = el.value;
   } else return;

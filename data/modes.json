@@ -10,21 +10,36 @@
     "id": "conciliateur",
     "nom": "Conciliateur",
     "resume": "Une personne neutre propose une solution",
-    "description": "Une personne neutre écoute les deux et propose une solution. Gratuit. Pour les petits conflits du quotidien.",
-    "je_vois": "Des voisins, une location, une petite somme, et la discussion a déjà échoué"
+    "description": "Gratuit, le conciliateur de justice aide à chercher un accord concret et peut proposer une solution, sans imposer de décision.",
+    "je_vois": "Des voisins, une location, une petite somme, et la discussion a déjà échoué",
+    "points": [
+      "Voisinage, logement, achats et litiges entre consommateurs et professionnels.",
+      "Il peut examiner les pièces utiles pour comprendre la situation. Il ne donne pas de consultation juridique.",
+      "Il privilégie la recherche d’un accord pratique. La durée dépend du dossier et des disponibilités.",
+      "Pour une séparation, un divorce ou la garde des enfants, on se tourne vers les professionnels du droit et, selon la situation, la médiation familiale."
+    ],
+    "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1736"
   },
   {
     "id": "mediateur",
     "nom": "Médiateur",
     "resume": "Une personne neutre aide à se reparler",
-    "description": "Une personne neutre aide les gens à se reparler pour qu'ils trouvent eux-mêmes leur accord. Pour les conflits où la relation compte.",
-    "je_vois": "Des proches qui veulent garder une bonne relation mais n'arrivent plus à se parler"
+    "description": "Le médiateur aide les personnes à exprimer leurs besoins, comprendre le conflit et construire elles-mêmes un accord.",
+    "je_vois": "Des proches qui veulent garder une bonne relation mais n'arrivent plus à se parler",
+    "points": [
+      "Il facilite le dialogue sans trancher ni imposer une solution. Les médiations sectorielles peuvent proposer une solution.",
+      "Les échanges sont confidentiels, sous réserve des exceptions prévues par la loi. Les documents utiles peuvent être demandés selon la médiation.",
+      "Le coût dépend du type de médiation : souvent payant en libéral, gratuit pour le consommateur dans plusieurs secteurs.",
+      "La durée varie : plusieurs entretiens peuvent être nécessaires. Il n’y a pas de durée générale de quatre heures ni de garantie d’accord."
+    ],
+    "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1822"
   },
   {
     "id": "tribunal",
-    "nom": "Tribunal",
-    "resume": "Loi enfreinte, cas grave ou échec du reste",
-    "description": "Quand quelqu'un a enfreint la loi, quand c'est grave, ou quand tout le reste a échoué.",
-    "je_vois": "Quelqu'un qui a enfreint la loi (vol, violence)"
+    "nom": "Contentieux",
+    "resume": "Le tribunal tranche, notamment si l’amiable échoue",
+    "description": "Le contentieux consiste à demander au tribunal de trancher un litige. Il peut être envisagé si la conciliation ou la médiation échoue, ou si la situation nécessite l’intervention de la justice.",
+    "je_vois": "L’amiable n’a pas abouti, ou la situation nécessite une décision de justice",
+    "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1822"
   }
 ]

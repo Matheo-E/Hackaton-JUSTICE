@@ -1,7 +1,67 @@
 {
-  "ordre": "Ordre logique : négociations → conciliateur / médiateur → tribunal.",
+  "ordre": "Choisir selon le contexte : négociation, conciliation ou médiation. Si l’amiable échoue, le contentieux peut être envisagé.",
   "bon_a_savoir": [
     "Des branches qui dépassent chez le voisin doivent être coupées par le propriétaire de l'arbre. Le voisin peut garder les fruits tombés tout seuls chez lui, mais pas les cueillir sur l'arbre.",
-    "Voler, ou revendre ce qui ne nous appartient pas, est une infraction : ça se règle devant la justice."
+    "Voler, ou revendre ce qui ne nous appartient pas, est une infraction : ça se règle devant la justice.",
+    "Un dossier peut être incomplet : posez des questions et demandez les pièces manquantes avant de proposer une orientation.",
+    "Le jeu présente une orientation plus adaptée au contexte, sans qualifier les autres propositions de mauvaises réponses."
+  ],
+  "mediateurs": [
+    {
+      "nom": "Médiateur de la consommation",
+      "pour": "Un achat ou un service opposant un consommateur à un professionnel, après une réclamation préalable.",
+      "cout": "Gratuit pour le consommateur.",
+      "precision": "Le médiateur compétent est indiqué par le professionnel. Il examine le dossier et peut proposer une solution.",
+      "source": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/la-mediation-de-la-consommation-ce-que-vous-devez-savoir"
+    },
+    {
+      "nom": "Médiateur de l’assurance",
+      "pour": "Un désaccord avec un assureur, après les démarches auprès de son service de réclamation.",
+      "cout": "Gratuit pour le consommateur.",
+      "precision": "Le contrat, les justificatifs et les courriers échangés peuvent être nécessaires.",
+      "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F3050"
+    },
+    {
+      "nom": "Médiateur familial",
+      "pour": "Des difficultés de dialogue au sein de la famille : séparation, organisation familiale ou liens entre générations.",
+      "cout": "Participation selon les revenus dans les services conventionnés par la Caf ; tarifs différents en libéral.",
+      "precision": "Les services conventionnés emploient des médiateurs familiaux diplômés d’État. La Caf finance les services conventionnés : elle ne rémunère pas directement chaque médiateur libéral.",
+      "source": "https://caf.fr/professionnels/offres-et-services/dispositifs-partenaires/mediation-familiale"
+    },
+    {
+      "nom": "Médiateur libéral",
+      "pour": "Des personnes souhaitant travailler sur leur conflit avec un professionnel choisi ensemble.",
+      "cout": "Payant, tarif à convenir avant de commencer.",
+      "precision": "Le médiateur doit être indépendant, impartial et neutre. Le nombre et la durée des séances dépendent des besoins.",
+      "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1822"
+    },
+    {
+      "nom": "Défenseur des droits (ancien Médiateur de la République)",
+      "pour": "Des difficultés avec une administration ou un service public.",
+      "cout": "Service gratuit.",
+      "precision": "Le Défenseur des droits a succédé au Médiateur de la République en 2011. Il exerce aussi d’autres missions de protection des droits.",
+      "source": "https://www.defenseurdesdroits.fr/index.php/50-ans-de-mediation-dans-la-republique-un-anniversaire-pour-preparer-lavenir-162"
+    },
+    {
+      "nom": "Médiateur bancaire",
+      "pour": "Un litige avec une banque après une réclamation préalable restée sans solution satisfaisante.",
+      "cout": "Gratuit pour le client.",
+      "precision": "Il faut fournir les justificatifs des démarches déjà effectuées auprès de la banque.",
+      "source": "https://www.service-public.gouv.fr/particuliers/vosdroits/F20523"
+    },
+    {
+      "nom": "Médiateur des entreprises (service public)",
+      "pour": "Des différends commerciaux entre entreprises ou avec un acteur public.",
+      "cout": "Gratuit.",
+      "precision": "Ce service public agit dans la confidentialité et l’impartialité : il n’est pas le représentant d’une des entreprises.",
+      "source": "https://www.economie.gouv.fr/mediateur-des-entreprises/les-missions/la-mediation"
+    },
+    {
+      "nom": "Médiateur interne d’entreprise",
+      "pour": "Un dispositif propre à une entreprise, dont il faut vérifier le champ et les conditions.",
+      "cout": "Selon le dispositif.",
+      "precision": "Son rattachement à l’entreprise doit être distingué du service public Médiateur des entreprises. Un médiateur de la consommation doit garantir son indépendance et son impartialité, même s’il est désigné par une entreprise.",
+      "source": "https://www.economie.gouv.fr/mediation-conso/foire-aux-questions"
+    }
   ]
 }

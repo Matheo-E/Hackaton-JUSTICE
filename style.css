@@ -343,6 +343,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .feedback-sceau { display: block; width: 160px; height: 160px; object-fit: contain; margin: 0 auto .5rem;
                   transform: rotate(-8deg); animation: pastille .45s var(--ressort) both; }
 .feedback-sceau:not([src]) { display: none; }
+.feedback-sceau[hidden] { display: none; }
 #ecran-feedback .feedback-sceau[src] + h2::before { display: none; } /* le sceau remplace la pastille */
 
 .fil { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.25rem; }
@@ -372,32 +373,30 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 
 /* Feedback */
-#ecran-feedback h2::before {
-  content: ""; display: block; width: 72px; height: 72px; margin: 0 auto 1rem; border-radius: 50%;
-  background: currentColor; animation: pastille .45s var(--ressort) both;
-  -webkit-mask: var(--icone) center/40px no-repeat; mask: var(--icone) center/40px no-repeat, linear-gradient(#000 0 0);
-  mask-composite: exclude; -webkit-mask-composite: xor;
-}
 @keyframes pastille { from { transform: scale(.6); opacity: 0; } }
-.bonne { color: var(--vert);
-  --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-.mauvaise { color: var(--rouge);
-  --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"); }
 #feedback-reponse b { color: var(--texte); }
 .explication {
   max-width: 38rem; margin: 1.5rem auto 0; padding: 1.25rem 1.5rem; text-align: left;
   background: var(--surface); color: var(--texte); border-radius: var(--rayon); box-shadow: var(--ombre);
 }
+.statistiques-joueurs { max-width: 38rem; margin: 1.5rem auto; padding: 1.25rem; text-align: left; background: var(--surface); border-radius: var(--rayon); }
+.stats-total, .statistiques-note { font-size: .8rem; color: var(--texte-2); }
+.statistiques-note { margin: 1rem 0 0; }
+.stats-choix { list-style: none; padding: 0; margin: 0; display: grid; gap: .8rem; }
+.stats-etiquette { display: flex; justify-content: space-between; align-items: center; gap: .75rem; font-size: .9rem; }
+.stats-etiquette small { display: inline-block; margin: 0 0 0 .4rem; padding: .1rem .4rem; border-radius: 999px; background: var(--fond); color: var(--texte-2); font-size: .7rem; }
+.stats-choix progress { display: block; width: 100%; height: .6rem; margin-top: .3rem; accent-color: #947454; }
+.stats-recap { margin-top: 1rem; }
+.stats-recap h3 { margin-bottom: .4rem; }
 
 /* Récap */
 .gros { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 700; letter-spacing: -0.03em; color: var(--texte); margin: .5rem 0; }
 .recap { list-style: none; padding: 0; max-width: 38rem; margin: 1.5rem auto 0; text-align: left;
          background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); overflow: hidden; }
-.recap li { padding: .9rem 1.25rem .9rem 3rem; position: relative; border-bottom: 1px solid color-mix(in srgb, var(--texte-2) 18%, transparent); }
-.recap li:last-child { border-bottom: 0; }
-.recap li::before { position: absolute; left: 1.2rem; top: .9rem; font-weight: 700; }
-.recap li.ok::before { content: "✓"; color: var(--vert); }
-.recap li.ko::before { content: "✕"; color: var(--rouge); }
+.recap > li { padding: .9rem 1.25rem .9rem 3rem; position: relative; border-bottom: 1px solid color-mix(in srgb, var(--texte-2) 18%, transparent); }
+.recap > li:last-child { border-bottom: 0; }
+.recap > li::before { position: absolute; left: 1.2rem; top: .9rem; font-weight: 700; }
+.recap > li::before { content: "•"; color: var(--texte-2); }
 .recap small { display: block; color: var(--texte-2); margin-top: .2rem; }
 
 /* Manuel : feuille modale avec voile assombri, qui naît du bouton Manuel */
@@ -416,6 +415,43 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   transition: transform .35s var(--ressort);
 }
 .modale.ouvert .modale-contenu { transform: none; }
+.types-mediateurs { max-width: 58rem; background: #e9dcc8; color: #34251a; }
+.types-mediateurs h2 { font-family: Georgia, serif; }
+.types-mediateurs .propositions-consigne { color: #66513e; font-size: .9rem; }
+#liste-types-mediateurs { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1.2rem; margin: 1.5rem 0; padding: .25rem; }
+.papier-proposition {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;
+  min-height: 11rem; padding: 1.1rem; text-align: left; border-radius: 3px;
+  background: #fffdf5; color: #34251a; border: 1px solid #d1bfa2;
+  box-shadow: 0 5px 10px rgba(60, 40, 20, .16); transform: rotate(-1deg);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.papier-proposition:nth-child(even) { transform: rotate(1deg); }
+.papier-proposition:hover, .papier-proposition:focus-visible { transform: translateY(-4px) rotate(0); box-shadow: 0 10px 20px rgba(60, 40, 20, .24); }
+.papier-proposition.selectionne { border: 2px solid #8b2424; }
+.papier-entete { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: #887259; border-bottom: 1px solid #e4d8c1; padding-bottom: .5rem; }
+.papier-proposition strong { font: 700 1.1rem/1.25 Georgia, serif; }
+.papier-pied { font-size: .75rem; color: #8b2424; border-top: 1px dashed #d1bfa2; padding-top: .6rem; }
+.changer-mediateur { position: absolute; bottom: 0; left: 0; padding: .2rem .6rem; font-size: clamp(.55rem, 1vw, .75rem); color: #fffdf5; background: #614635; border-radius: 999px; }
+.changer-mediateur[hidden] { display: none; }
+.feuille.mediateur-precise { outline: 1px solid #8b2424; }
+.feuille.mediateur-precise strong { overflow-wrap: anywhere; }
+.guide-mediateurs { margin: .8em 0; }
+.guide-mediateurs summary { color: #8b2424; cursor: pointer; font-weight: 700; }
+.guide-type-mediateur { margin: .6em 0; border-top: 1px solid #d8cfc2; padding-top: .4em; }
+.guide-type-mediateur p { color: #4a3b2f; margin: .4em 0; }
+@media (max-width: 480px) {
+  #liste-types-mediateurs { grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .papier-proposition { min-height: 9rem; padding: .75rem; }
+  .papier-proposition strong { font-size: .95rem; }
+  .papier-entete { font-size: .55rem; }
+}
+.page .lien-mediateurs { padding: 0; background: none; color: #8b2424; border-radius: 3px; font: inherit; text-decoration: underline; }
+.guide-points { padding-left: 1.1em; margin: .4em 0; }
+.guide-points li { margin-bottom: .3em; }
+.guide-source { color: #8b2424; font-size: .8em; }
+.dossier-incomplet { padding: .6rem; border-radius: 8px; background: var(--jaune); color: var(--texte); }
+.question-piece { border: 1px dashed var(--accent); }
 .modale-contenu dl { margin: 1rem 0; }
 .modale-contenu dt { font-weight: 600; margin-top: 1rem; }
 .modale-contenu dd { margin: .2rem 0 0; color: var(--texte-2); }
