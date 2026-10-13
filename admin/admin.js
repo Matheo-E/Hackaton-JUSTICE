@@ -61,7 +61,7 @@ function versEdition(c) {
     personnages: (c.personnages || (c.visiteurs || []).map((nom) => ({ nom }))).map((p) => ({ nom: p.nom || "", sprite: p.sprite || "" })),
     dialogue: (c.dialogue || []).map((l) => ({ qui: l.qui || "", texte: l.texte || "" })),
     questions: (c.questions || []).map((q) => ({ question: q.question || "", qui: [].concat(q.qui || []), reponse: q.reponse || "" })),
-    documents: (c.documents || []).map((d) => ({ ...d, titre: d.titre || "", image: d.image || "", texte: d.texte || "" })),
+    documents: (c.documents || []).map((d) => ({ ...d, titre: d.titre || "", image: d.image || "", texte: d.texte || "", proprietaire: [].concat(d.proprietaire || []) })),
     indices: c.indices || [],
     reponse: c.reponse || "",
     explication: c.explication || "",
@@ -104,6 +104,8 @@ function versJeu(c) {
   return {
     ...c,
     questions: c.questions.map((q) => ({ ...q, qui: q.qui.length === 1 ? q.qui[0] : q.qui })),
+    documents: c.documents.map(({ proprietaire, ...d }) =>
+      proprietaire.length ? { ...d, proprietaire: proprietaire.length === 1 ? proprietaire[0] : proprietaire } : d),
     indices: c.indices.filter((t) => t.trim()),
   };
 }
@@ -343,6 +345,9 @@ function htmlEditeur(c) {
             <textarea class="champ" rows="3" data-k="dt-${i}" data-liste="documents" data-i="${i}" data-cle="texte"
               placeholder="${d.image ? "Ce qui est écrit sur l'image (lu par les lecteurs d'écran)" : "Contenu du document, affiché tel quel"}"
               aria-label="Contenu du document ${i + 1}">${echapper(d.texte)}</textarea>
+            <div class="repondants" role="group" aria-label="À qui est le document ${i + 1}" data-proprietaires="${i}">
+              ${htmlProprietaires(noms, d, i)}
+            </div>
             <label>Transmission du document
               <select class="champ" data-k="demande-${i}" data-liste="documents" data-i="${i}" data-cle="a_demander">
                 <option value="false" ${d.a_demander === true ? "" : "selected"}>Disponible dès le début</option>
@@ -389,6 +394,12 @@ function htmlRepondants(noms, q, i) {
     || `<span class="petit">Nommez d'abord les personnages.</span>`);
 }
 
+// Sans case cochée, le document est montré quel que soit le personnage sélectionné en jeu.
+function htmlProprietaires(noms, d, i) {
+  return `<span class="petit">Apporté par (aucun = tous) :</span>` + noms.map((n) => `<label class="puce${d.proprietaire.includes(n) ? " cochee" : ""}">
+      <input type="checkbox" data-k="d-${i}-${echapper(n)}" data-proprio="${i}" value="${echapper(n)}" ${d.proprietaire.includes(n) ? "checked" : ""}>${echapper(n)}</label>`).join("");
+}
+
 // Quand un nom change, on met à jour sur place les menus « Qui parle ? » et les puces
 // « Qui répond ? ». Pas de reconstruction de l'éditeur : le champ où l'on tape garde le focus.
 function majNoms() {
@@ -400,6 +411,10 @@ function majNoms() {
   $("editeur").querySelectorAll("[data-repondants]").forEach((z) => {
     const i = +z.dataset.repondants;
     z.innerHTML = htmlRepondants(noms, c.questions[i], i);
+  });
+  $("editeur").querySelectorAll("[data-proprietaires]").forEach((z) => {
+    const i = +z.dataset.proprietaires;
+    z.innerHTML = htmlProprietaires(noms, c.documents[i], i);
   });
 }
 
@@ -448,7 +463,7 @@ const MODELES = {
     return { qui: noms.length ? noms[c.dialogue.length % noms.length] : "", texte: "" }; // alterne les personnages
   },
   questions: () => ({ question: "", qui: [], reponse: "" }),
-  documents: () => ({ titre: "", image: "", texte: "" }),
+  documents: () => ({ titre: "", image: "", texte: "", proprietaire: [] }),
   indices: () => "",
 };
 
@@ -457,6 +472,7 @@ function renommer(c, ancien, nouveau) {
   if (!ancien || c.personnages.filter((p) => p.nom === ancien).length > 1) return;
   c.dialogue.forEach((l) => { if (l.qui === ancien) l.qui = nouveau; });
   c.questions.forEach((q) => { q.qui = q.qui.map((n) => (n === ancien ? nouveau : n)); });
+  c.documents.forEach((d) => { d.proprietaire = d.proprietaire.map((n) => (n === ancien ? nouveau : n)); });
 }
 
 $("editeur").addEventListener("input", (e) => {
@@ -470,6 +486,10 @@ $("editeur").addEventListener("input", (e) => {
   } else if (el.dataset.question != null) {
     const q = c.questions[+el.dataset.question];
     q.qui = el.checked ? [...new Set([...q.qui, el.value])] : q.qui.filter((n) => n !== el.value);
+    el.closest(".puce").classList.toggle("cochee", el.checked);
+  } else if (el.dataset.proprio != null) {
+    const d = c.documents[+el.dataset.proprio];
+    d.proprietaire = el.checked ? [...new Set([...d.proprietaire, el.value])] : d.proprietaire.filter((n) => n !== el.value);
     el.closest(".puce").classList.toggle("cochee", el.checked);
   } else if (el.dataset.liste) {
     const liste = c[el.dataset.liste];
@@ -508,6 +528,7 @@ $("editeur").addEventListener("click", (e) => {
       const [retire] = liste.splice(i, 1);
       if (b.dataset.liste === "personnages") {
         c.questions.forEach((q) => { q.qui = q.qui.filter((n) => n !== retire.nom); });
+        c.documents.forEach((d) => { d.proprietaire = d.proprietaire.filter((n) => n !== retire.nom); });
       }
       toast("Élément supprimé.", () => { liste.splice(i, 0, retire); marquerModifie(); rendreTout(); });
       break;
