@@ -1,26 +1,30 @@
 [
   {
-    "id": "negociation",
-    "nom": "Négociation directe",
-    "resume": "Les parties s'arrangent elles-mêmes",
-    "description": "[Texte provisoire] Les parties s'arrangent elles-mêmes. Description détaillée du manuel à rédiger."
+    "id": "amiable",
+    "nom": "À l'amiable",
+    "resume": "Les deux personnes se parlent directement",
+    "description": "Les deux personnes se parlent directement, sans personne entre elles. À essayer en premier.",
+    "je_vois": "Un malentendu, personne n'a encore vraiment discuté"
   },
   {
-    "id": "conciliation",
-    "nom": "Conciliation",
-    "resume": "Un conciliateur de justice, gratuit, aide à trouver un accord",
-    "description": "[Texte provisoire] Un conciliateur de justice, gratuit, aide à trouver un accord. Description détaillée du manuel à rédiger."
+    "id": "conciliateur",
+    "nom": "Conciliateur",
+    "resume": "Une personne neutre propose une solution",
+    "description": "Une personne neutre écoute les deux et propose une solution. Gratuit. Pour les petits conflits du quotidien.",
+    "je_vois": "Des voisins, une location, une petite somme, et la discussion a déjà échoué"
   },
   {
-    "id": "mediation",
-    "nom": "Médiation",
-    "resume": "Un médiateur aide les parties à renouer le dialogue",
-    "description": "[Texte provisoire] Un médiateur aide les parties à renouer le dialogue. Description détaillée du manuel à rédiger."
+    "id": "mediateur",
+    "nom": "Médiateur",
+    "resume": "Une personne neutre aide à se reparler",
+    "description": "Une personne neutre aide les gens à se reparler pour qu'ils trouvent eux-mêmes leur accord. Pour les conflits où la relation compte.",
+    "je_vois": "Des proches qui veulent garder une bonne relation mais n'arrivent plus à se parler"
   },
   {
-    "id": "juge",
-    "nom": "Juge nécessaire",
-    "resume": "L'amiable n'est pas adapté : il faut saisir la justice",
-    "description": "[Texte provisoire] L'amiable n'est pas adapté : il faut saisir la justice. Description détaillée du manuel à rédiger."
+    "id": "tribunal",
+    "nom": "Tribunal",
+    "resume": "Loi enfreinte, cas grave ou échec du reste",
+    "description": "Quand quelqu'un a enfreint la loi, quand c'est grave, ou quand tout le reste a échoué.",
+    "je_vois": "Quelqu'un qui a enfreint la loi (vol, violence)"
   }
 ]

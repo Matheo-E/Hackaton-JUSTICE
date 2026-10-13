@@ -1,0 +1,4 @@
+__pycache__/
+# Sauvegardes automatiques de l'espace admin (copies locales de data/cas.json)
+data/sauvegardes/
+data/cas.json.tmp

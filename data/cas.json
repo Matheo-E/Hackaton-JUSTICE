@@ -1,106 +1,220 @@
 [
   {
-    "id": "cas-1",
-    "nom_admin": "[Provisoire] Situation 1",
+    "id": "musique-trop-forte",
+    "nom_admin": "Cas 1 – La musique trop forte (amiable)",
     "personnages": [
       {
-        "nom": "Visiteur A",
+        "nom": "Mme Grondin",
+        "sprite": ""
+      },
+      {
+        "nom": "Sébastien",
         "sprite": ""
       }
     ],
     "dialogue": [
       {
-        "qui": "Visiteur A",
-        "texte": "[Texte provisoire] Visiteur A expose son problème ici."
+        "qui": "Mme Grondin",
+        "texte": "Mon voisin met sa musique à fond tous les soirs, je n'en peux plus !"
+      },
+      {
+        "qui": "Sébastien",
+        "texte": "Ah bon ? Elle ne m'a jamais rien dit…"
       }
     ],
-    "indices": [
-      "[indice provisoire 1]",
-      "[indice provisoire 2]"
+    "questions": [
+      {
+        "question": "Madame, vous lui en avez déjà parlé ?",
+        "qui": "Mme Grondin",
+        "reponse": "Euh… non. J'ai tapé au plafond avec un balai."
+      },
+      {
+        "question": "Monsieur, à quelle heure écoutez-vous de la musique ?",
+        "qui": "Sébastien",
+        "reponse": "Vers 21 h, avant de partir au travail."
+      }
     ],
-    "reponse": "negociation",
-    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Négociation directe »."
+    "documents": [
+      {
+        "titre": "Attestation de l'employeur de Sébastien",
+        "image": "assets/documents_jeu/cas1_attestation_employeur.png",
+        "texte": "Nous certifions que M. Sébastien Clain occupe un poste d'agent de sécurité de nuit, du lundi au vendredi, de 22 h à 6 h."
+      },
+      {
+        "titre": "Carte professionnelle de Mme Grondin",
+        "image": "assets/documents_jeu/cas1_carte_professionnelle.png",
+        "texte": "Commerçante — Marché forain de Saint-Paul — Installation des stands à partir de 5 h."
+      },
+      {
+        "titre": "Courrier du syndic de l'immeuble",
+        "image": "assets/documents_jeu/cas1_courrier_syndic.png",
+        "texte": "Madame, nous n'avons reçu à ce jour aucune réclamation concernant le bruit dans votre immeuble."
+      }
+    ],
+    "reponse": "amiable",
+    "explication": "Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essayé de discuter, ni entre eux, ni avec le syndic : une simple conversation peut tout régler."
   },
   {
-    "id": "cas-2",
-    "nom_admin": "[Provisoire] Situation 2",
+    "id": "manguier",
+    "nom_admin": "Cas 2 – Le manguier (conciliateur)",
     "personnages": [
       {
-        "nom": "Visiteur B",
+        "nom": "M. Payet",
         "sprite": ""
       },
       {
-        "nom": "Visiteur C",
+        "nom": "Mme Hoarau",
         "sprite": ""
       }
     ],
     "dialogue": [
       {
-        "qui": "Visiteur B",
-        "texte": "[Texte provisoire] Visiteur B expose son problème ici."
+        "qui": "M. Payet",
+        "texte": "Son arbre dépasse chez moi, les feuilles bouchent ma gouttière !"
       },
       {
-        "qui": "Visiteur C",
-        "texte": "[Texte provisoire] Visiteur C expose son problème ici."
+        "qui": "Mme Hoarau",
+        "texte": "Il ne s'en plaignait pas quand il vendait mes mangues…"
       }
     ],
-    "indices": [
-      "[indice provisoire 1]",
-      "[indice provisoire 2]"
+    "questions": [
+      {
+        "question": "Monsieur, avez-vous un manguier chez vous ?",
+        "qui": "M. Payet",
+        "reponse": "Non, pourquoi ?"
+      },
+      {
+        "question": "Les mangues, vous les ramassez par terre ?",
+        "qui": "M. Payet",
+        "reponse": "Euh… oui, bien sûr."
+      },
+      {
+        "question": "Avez-vous essayé d'en parler ensemble ?",
+        "qui": "Mme Hoarau",
+        "reponse": "Il m'a envoyé une lettre, je lui ai répondu. Ça n'a rien donné."
+      }
     ],
-    "reponse": "conciliation",
-    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Conciliation »."
+    "documents": [
+      {
+        "titre": "Reçu du marché forain",
+        "image": "assets/documents_jeu/cas2_recu_marche.png",
+        "texte": "Vendeur : M. Roger Payet — Produit : mangues — Quantité : 15 kg — Prix : 45 €"
+      },
+      {
+        "titre": "Lettre recommandée de M. Payet à Mme Hoarau",
+        "image": "assets/documents_jeu/cas2_lettre_payet.png",
+        "texte": "Madame, je vous demande de couper les branches de votre manguier qui dépassent sur mon terrain. Sans réponse de votre part, je saisirai la justice."
+      },
+      {
+        "titre": "Lettre recommandée de Mme Hoarau à M. Payet",
+        "image": "assets/documents_jeu/cas2_lettre_hoarau.png",
+        "texte": "Monsieur, cet arbre a été planté par mon grand-père. Je refuse de le couper."
+      }
+    ],
+    "reponse": "conciliateur",
+    "explication": "M. Payet n'a pas de manguier, mais il vend 15 kg de mangues au marché : il cueille sur l'arbre de sa voisine, alors qu'il n'a le droit de garder que les fruits tombés tout seuls chez lui. Mme Hoarau, elle, doit couper les branches qui dépassent. Chacun a un peu tort, et les lettres montrent que la discussion directe a échoué : le conciliateur peut leur proposer une solution juste."
   },
   {
-    "id": "cas-3",
-    "nom_admin": "[Provisoire] Situation 3",
+    "id": "groupe-de-musique",
+    "nom_admin": "Cas 3 – Le groupe de musique (médiateur)",
     "personnages": [
       {
-        "nom": "Visiteur D",
+        "nom": "Léa",
         "sprite": ""
       },
       {
-        "nom": "Visiteur E",
+        "nom": "Hugo",
         "sprite": ""
       }
     ],
     "dialogue": [
       {
-        "qui": "Visiteur D",
-        "texte": "[Texte provisoire] Visiteur D expose son problème ici."
+        "qui": "Léa",
+        "texte": "On a créé le groupe ensemble, et maintenant il veut partir avec NOS chansons !"
       },
       {
-        "qui": "Visiteur E",
-        "texte": "[Texte provisoire] Visiteur E expose son problème ici."
+        "qui": "Hugo",
+        "texte": "Je les ai écrites, moi ! Elle ne fait que chanter."
       }
     ],
-    "indices": [
-      "[indice provisoire 1]",
-      "[indice provisoire 2]"
+    "questions": [
+      {
+        "question": "Vous voulez continuer à jouer ensemble ?",
+        "qui": [
+          "Léa",
+          "Hugo"
+        ],
+        "reponse": "… Peut-être."
+      },
+      {
+        "question": "Vous vous êtes reparlé depuis la dispute ?",
+        "qui": "Hugo",
+        "reponse": "Non. Plus un mot depuis deux semaines."
+      }
     ],
-    "reponse": "mediation",
-    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Médiation »."
+    "documents": [
+      {
+        "titre": "Certificat de dépôt de chanson",
+        "image": "assets/documents_jeu/cas3_certificat_depot.png",
+        "texte": "Titre : « Lumière du soir » — Paroles : Léa Martin, Hugo Rivière — Musique : Hugo Rivière"
+      },
+      {
+        "titre": "Courrier de la salle de concert « La Case à Sons »",
+        "image": "assets/documents_jeu/cas3_courrier_salle.png",
+        "texte": "Suite à vos réponses contradictoires et à l'impossibilité de vous joindre ensemble, nous sommes contraints d'annuler votre concert du 14 novembre."
+      }
+    ],
+    "reponse": "mediateur",
+    "explication": "Le certificat prouve que les paroles ont été écrites à deux. Ce sont des amis qui ont peut-être envie de continuer, mais ils n'arrivent plus à se parler seuls, au point de perdre un concert. Le médiateur va les aider à renouer le dialogue plutôt que de désigner un gagnant."
   },
   {
-    "id": "cas-4",
-    "nom_admin": "[Provisoire] Situation 4",
+    "id": "velo-vole",
+    "nom_admin": "Cas 4 – Le vélo volé (piège, tribunal)",
     "personnages": [
       {
-        "nom": "Visiteur F",
+        "nom": "Mathis",
+        "sprite": ""
+      },
+      {
+        "nom": "Jordan",
         "sprite": ""
       }
     ],
     "dialogue": [
       {
-        "qui": "Visiteur F",
-        "texte": "[Texte provisoire] Visiteur F expose son problème ici."
+        "qui": "Mathis",
+        "texte": "Il m'a pris mon vélo, je veux juste qu'on s'arrange gentiment."
+      },
+      {
+        "qui": "Jordan",
+        "texte": "Je l'ai emprunté… je comptais le rendre."
       }
     ],
-    "indices": [
-      "[indice provisoire 1]",
-      "[indice provisoire 2]"
+    "questions": [
+      {
+        "question": "Jordan, où est le vélo maintenant ?",
+        "qui": "Jordan",
+        "reponse": "Euh… chez moi. Enfin, je crois."
+      },
+      {
+        "question": "Mathis, comment savez-vous que c'est votre vélo ?",
+        "qui": "Mathis",
+        "reponse": "Il a un numéro gravé sur le cadre, c'est écrit sur la facture."
+      }
     ],
-    "reponse": "juge",
-    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Juge nécessaire »."
+    "documents": [
+      {
+        "titre": "Facture d'achat du vélo",
+        "image": "assets/documents_jeu/cas4_facture_velo.png",
+        "texte": "Client : famille Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €"
+      },
+      {
+        "titre": "Bon de dépôt-vente du magasin « Occaz Sport »",
+        "image": "assets/documents_jeu/cas4_bon_depot_vente.png",
+        "texte": "Déposant : Jordan Lebon — Article : VTT rouge — N° de cadre : VT-48213 — Prix de vente : 80 €"
+      }
+    ],
+    "reponse": "tribunal",
+    "explication": "Le numéro de cadre est le même sur les deux documents : Jordan n'a pas emprunté le vélo, il l'a déposé en magasin pour le revendre. C'est un vol : une infraction. Même si les deux veulent s'arranger, ça ne se règle pas à l'amiable ni avec un conciliateur ou un médiateur. Il faut aller voir la justice."
   }
 ]

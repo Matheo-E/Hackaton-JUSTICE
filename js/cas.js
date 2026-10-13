@@ -4,6 +4,8 @@
 "use strict";
 
 const SPRITE_PAR_DEFAUT = "assets/visiteur.svg";
+// Gabarits d'affichage des documents (purement CSS, aucun fichier image requis).
+const TYPES_DOCUMENT = ["sms", "note", "planning", "annonce"];
 
 // Transforme un cas brut en cas prêt à jouer, en complétant les valeurs par défaut.
 // Accepte aussi l'ancien format du PROJECT.md ("visiteurs": ["M. Payet", ...]).
@@ -16,6 +18,20 @@ function normaliserCas(brut) {
     personnages,
     type: personnages.length > 1 ? "duo" : "solo", // déduit, pas besoin de le saisir
     dialogue: brut.dialogue || [],
+    // « qui » d'une question : un nom, ou une liste de noms (réponse en chœur).
+    questions: (brut.questions || []).map((q) => ({
+      question: q.question,
+      qui: Array.isArray(q.qui) ? q.qui : [q.qui],
+      reponse: q.reponse,
+    })),
+    // Un document est soit une image (« image », texte déjà dessus), soit un texte mis en forme en CSS.
+    // Avec une image, « texte » sert de transcription (accessibilité, image manquante).
+    documents: (brut.documents || []).map((d) => ({
+      titre: d.titre,
+      image: d.image || "",
+      type: TYPES_DOCUMENT.includes(d.type) ? d.type : "note",
+      texte: d.texte || "",
+    })),
     indices: brut.indices || [],
     reponse: brut.reponse,
     explication: brut.explication || "",
@@ -33,6 +49,17 @@ function validerCas(cas, idsModes) {
   cas.dialogue.forEach((l, i) => {
     if (!noms.includes(l.qui)) err.push(`réplique ${i + 1} : « ${l.qui} » n'est pas un personnage du cas`);
     if (!l.texte) err.push(`réplique ${i + 1} sans texte`);
+  });
+  cas.questions.forEach((q, i) => {
+    if (!q.question) err.push(`question ${i + 1} sans texte`);
+    if (!q.reponse) err.push(`question ${i + 1} sans réponse`);
+    q.qui.forEach((n) => {
+      if (!noms.includes(n)) err.push(`question ${i + 1} : « ${n} » n'est pas un personnage du cas`);
+    });
+  });
+  cas.documents.forEach((d, i) => {
+    if (!d.titre) err.push(`document ${i + 1} sans titre`);
+    if (!d.texte && !d.image) err.push(`document ${i + 1} sans texte ni image`);
   });
   if (!idsModes.includes(cas.reponse))
     err.push(`réponse « ${cas.reponse} » inconnue (attendu : ${idsModes.join(", ")})`);
