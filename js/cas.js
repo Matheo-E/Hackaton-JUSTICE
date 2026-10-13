@@ -26,8 +26,11 @@ function normaliserCas(brut) {
     })),
     // Un document est soit une image (« image », texte déjà dessus), soit un texte mis en forme en CSS.
     // Avec une image, « texte » sert de transcription (accessibilité, image manquante).
+    // « proprietaire » : le ou les personnages qui ont apporté ce document (nom ou liste de noms).
+    // Sans propriétaire, le document est montré quel que soit le personnage sélectionné.
     documents: (brut.documents || []).map((d) => ({
       titre: d.titre,
+      proprietaires: [].concat(d.proprietaire || []),
       image: d.image || "",
       type: TYPES_DOCUMENT.includes(d.type) ? d.type : "note",
       texte: d.texte || "",
@@ -60,6 +63,9 @@ function validerCas(cas, idsModes) {
   cas.documents.forEach((d, i) => {
     if (!d.titre) err.push(`document ${i + 1} sans titre`);
     if (!d.texte && !d.image) err.push(`document ${i + 1} sans texte ni image`);
+    d.proprietaires.forEach((n) => {
+      if (!noms.includes(n)) err.push(`document ${i + 1} : « ${n} » n'est pas un personnage du cas`);
+    });
   });
   if (!idsModes.includes(cas.reponse))
     err.push(`réponse « ${cas.reponse} » inconnue (attendu : ${idsModes.join(", ")})`);

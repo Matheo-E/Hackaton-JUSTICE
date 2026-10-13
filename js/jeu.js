@@ -11,6 +11,8 @@ const etat = {
   file: [],       // répliques à jouer, dans l'ordre : { qui: [noms], texte, joueur? }
   pos: 0,         // réplique affichée (== file.length : plus aucune bulle)
   posees: new Set(), // index des questions déjà posées
+  selection: null,   // nom du personnage dont on regarde les documents (null = personne)
+  docs: [],          // documents affichés dans la pile et la visionneuse (ceux du personnage choisi)
 };
 
 const $ = (id) => document.getElementById(id);
@@ -155,7 +157,8 @@ function afficherCas() {
   $("score").textContent = `Bonnes orientations : ${etat.resultats.filter((r) => r.correct).length}`;
 
   $("visiteurs").innerHTML = cas.personnages
-    .map((p) => `<div class="visiteur" data-nom="${echapper(p.nom)}">
+    .map((p) => `<div class="visiteur" data-nom="${echapper(p.nom)}" role="button" tabindex="0"
+          aria-pressed="false" aria-label="Voir les documents de ${echapper(p.nom)}">
         <div class="bulle-scene"></div>
         <img src="${echapper(p.sprite)}" alt="${echapper(p.nom)}">
       </div>`)
@@ -166,6 +169,13 @@ function afficherCas() {
   $("tampon").className = "tampon-outil";
   $("plan").classList.remove("decide");
   document.querySelectorAll(".feuille").forEach((f) => f.classList.remove("tamponnee", "bonne", "mauvaise"));
+  etat.selection = null;
+  document.querySelectorAll(".visiteur").forEach((v) => {
+    v.addEventListener("click", () => choisirPersonnage(v.dataset.nom));
+    v.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); choisirPersonnage(v.dataset.nom); }
+    });
+  });
   remplirDossier();
   creerQuestions();
   afficherEcran("ecran-visiteur");
@@ -266,18 +276,34 @@ function poserQuestion(i, bouton) {
 
 // Documents du client : une pile de miniatures sur le bord droit de l'écran ;
 // un clic ouvre le document en grand dans la visionneuse (‹ › ou flèches pour feuilleter).
+// La pile montre les documents du personnage sur lequel on a cliqué (et rien s'il n'en a pas).
 function htmlDocument(d) {
   return d.image
     ? `<img src="${echapper(d.image)}" alt="${echapper(d.titre + " : " + d.texte)}">`
     : `<article class="document doc-${d.type}"><h4>${echapper(d.titre)}</h4><p>${echapper(d.texte)}</p></article>`;
 }
 
+function choisirPersonnage(nom) {
+  etat.selection = nom;
+  document.querySelectorAll(".visiteur").forEach((v) => {
+    const choisi = v.dataset.nom === nom;
+    v.classList.toggle("choisi", choisi);
+    v.setAttribute("aria-pressed", choisi);
+  });
+  remplirDossier();
+}
+
 function remplirDossier() {
   const cas = etat.cas[etat.index];
   const pile = $("pile-documents");
   pile.innerHTML = "";
-  if (!cas.documents.length) pile.innerHTML = `<p class="vide">Aucun document pour ce dossier.</p>`;
-  cas.documents.forEach((d, i) => {
+  // Un document sans propriétaire reste visible pour tous les personnages.
+  etat.docs = etat.selection
+    ? cas.documents.filter((d) => !d.proprietaires.length || d.proprietaires.includes(etat.selection))
+    : [];
+  $("titre-documents").textContent = etat.selection ? `Documents de ${etat.selection}` : "Documents du client";
+  if (!etat.selection) pile.innerHTML = `<p class="vide">Cliquez sur un personnage pour voir ses documents.</p>`;
+  etat.docs.forEach((d, i) => {
     const b = document.createElement("button");
     b.className = "miniature";
     b.style.setProperty("--rot", `${[-3, 2, -1.5, 3][i % 4]}deg`); // papiers posés en vrac
@@ -288,7 +314,8 @@ function remplirDossier() {
 }
 
 function ouvrirDocument(i) {
-  const docs = etat.cas[etat.index].documents;
+  const docs = etat.docs;
+  if (!docs.length) return;
   etat.docOuvert = (i + docs.length) % docs.length;
   const d = docs[etat.docOuvert];
   $("dossier-titre").textContent = d.titre;

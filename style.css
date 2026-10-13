@@ -228,6 +228,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .visiteur img { transition: filter .3s, transform .3s var(--ressort); }
 .visiteurs:has(.parle) .visiteur:not(.parle) img { filter: brightness(.82) saturate(.8); }
 .visiteur.parle img { transform: translateY(-1.5%); }
+/* Personnage dont on regarde les documents : cliquable, souligné d'un trait d'accent à ses pieds */
+.visiteur { cursor: pointer; }
+.visiteur:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.visiteur.choisi::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: 0; height: .3rem;
+                          border-radius: 999px; background: var(--accent); z-index: 3; pointer-events: none; }
 .visiteur .nom { top: auto; bottom: 42%; z-index: 3; }
 .bulle-scene {
   position: absolute; z-index: 4; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);

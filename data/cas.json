@@ -37,16 +37,19 @@
     "documents": [
       {
         "titre": "Attestation de l'employeur de Sébastien",
+        "proprietaire": "Sébastien",
         "image": "assets/documents_jeu/cas1_attestation_employeur.png",
         "texte": "Nous certifions que M. Sébastien Clain occupe un poste d'agent de sécurité de nuit, du lundi au vendredi, de 22 h à 6 h."
       },
       {
         "titre": "Carte professionnelle de Mme Grondin",
+        "proprietaire": "Mme Grondin",
         "image": "assets/documents_jeu/cas1_carte_professionnelle.png",
         "texte": "Commerçante — Marché forain de Saint-Paul — Installation des stands à partir de 5 h."
       },
       {
         "titre": "Courrier du syndic de l'immeuble",
+        "proprietaire": "Mme Grondin",
         "image": "assets/documents_jeu/cas1_courrier_syndic.png",
         "texte": "Madame, nous n'avons reçu à ce jour aucune réclamation concernant le bruit dans votre immeuble."
       }
@@ -97,16 +100,19 @@
     "documents": [
       {
         "titre": "Reçu du marché forain",
+        "proprietaire": "Mme Hoarau",
         "image": "assets/documents_jeu/cas2_recu_marche.png",
         "texte": "Vendeur : M. Roger Payet — Produit : mangues — Quantité : 15 kg — Prix : 45 €"
       },
       {
         "titre": "Lettre recommandée de M. Payet à Mme Hoarau",
+        "proprietaire": "M. Payet",
         "image": "assets/documents_jeu/cas2_lettre_payet.png",
         "texte": "Madame, je vous demande de couper les branches de votre manguier qui dépassent sur mon terrain. Sans réponse de votre part, je saisirai la justice."
       },
       {
         "titre": "Lettre recommandée de Mme Hoarau à M. Payet",
+        "proprietaire": "Mme Hoarau",
         "image": "assets/documents_jeu/cas2_lettre_hoarau.png",
         "texte": "Monsieur, cet arbre a été planté par mon grand-père. Je refuse de le couper."
       }
@@ -155,11 +161,16 @@
     "documents": [
       {
         "titre": "Certificat de dépôt de chanson",
+        "proprietaire": "Léa",
         "image": "assets/documents_jeu/cas3_certificat_depot.png",
         "texte": "Titre : « Lumière du soir » — Paroles : Léa Martin, Hugo Rivière — Musique : Hugo Rivière"
       },
       {
         "titre": "Courrier de la salle de concert « La Case à Sons »",
+        "proprietaire": [
+          "Léa",
+          "Hugo"
+        ],
         "image": "assets/documents_jeu/cas3_courrier_salle.png",
         "texte": "Suite à vos réponses contradictoires et à l'impossibilité de vous joindre ensemble, nous sommes contraints d'annuler votre concert du 14 novembre."
       }
@@ -205,11 +216,13 @@
     "documents": [
       {
         "titre": "Facture d'achat du vélo",
+        "proprietaire": "Mathis",
         "image": "assets/documents_jeu/cas4_facture_velo.png",
         "texte": "Client : famille Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €"
       },
       {
         "titre": "Bon de dépôt-vente du magasin « Occaz Sport »",
+        "proprietaire": "Jordan",
         "image": "assets/documents_jeu/cas4_bon_depot_vente.png",
         "texte": "Déposant : Jordan Lebon — Article : VTT rouge — N° de cadre : VT-48213 — Prix de vente : 80 €"
       }

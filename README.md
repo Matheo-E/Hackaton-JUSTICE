@@ -108,6 +108,7 @@ Un « cas » = un ou deux PNJ + leur situation. Tout se passe dans `data/cas.jso
 | `documents` | non | pièces du dossier, lisibles via le bouton « Dossier ». Sans document, le bouton est masqué |
 | `documents[].image` | non | image du document, texte compris (ex. `assets/documents_jeu/cas4_facture_velo.png`) |
 | `documents[].texte` | oui sans image | sans image : texte affiché avec un gabarit CSS. Avec image : transcription (texte alternatif) |
+| `documents[].proprietaire` | non | personnage qui a apporté le document (nom, ou liste de noms si partagé). La pile de droite n'affiche que les documents du personnage sur lequel le joueur a cliqué ; sans propriétaire, le document est visible pour tous |
 | `documents[].type` | non | gabarit CSS si pas d'image : `sms`, `note` (défaut), `planning`, `annonce` |
 | `indices` | non | conseils de Papi, donnés un par appel au téléphone, dans l'ordre (le plus vague d'abord). Sans indice, le téléphone est masqué |
 | `reponse` | oui | `id` d'un mode de `data/modes.json` : `amiable`, `conciliateur`, `mediateur`, `tribunal` |
@@ -141,7 +142,7 @@ Déroulé d'un client :
 1. Le client arrive et parle en **bulles**, une réplique à la fois (clic sur la scène, Entrée ou Espace pour continuer). Le personnage qui ne parle pas est légèrement assombri.
 2. **Décision au tampon** : 4 feuilles d'orientation (une par mode de `data/modes.json`) sont posées sur le bureau. Le joueur saisit le tampon (`assets/scene/tampon.png`) et le glisse sur la bonne feuille (souris ou doigt). La feuille reçoit le sceau `certified.png` (bonne réponse) ou `banned.png` (mauvaise), puis l'écran d'explication s'affiche. Le tampon est grisé tant que l'ouverture n'est pas terminée. Au clavier : Tab jusqu'à une feuille puis Entrée.
    - **Bord gauche de l'écran** : le livre juridique fermé (`book_closed-Photoroom.png`). Un clic l'ouvre en grand (`book_open.png`) : tableau « Je vois… / J'envoie… » sur la page de gauche, détail des choix et « Bon à savoir » sur celle de droite.
-   - **Bord droit de l'écran** : les documents du client, en pile de miniatures. Un clic en ouvre un en grand ; ‹ › ou les flèches du clavier pour feuilleter.
+   - **Bord droit de l'écran** : les documents du client, en pile de miniatures. Elle montre les documents du personnage sur lequel on clique (rien s'il n'en a pas). Un clic sur un document l'ouvre en grand ; ‹ › ou les flèches du clavier pour feuilleter.
    - Sous 1100 px de large, livre et documents passent sous la scène.
 3. **Questions** : le joueur pose une question (bulle bleue), le ou les personnages répondent en bulle. Une question posée est barrée.
 6. **Récap** (bouton en haut) : tout ce qui a été dit, questions comprises, + les conseils de Papi déjà obtenus.
