@@ -16,14 +16,16 @@ Routes ajoutées au service de fichiers statiques :
 import argparse
 import base64
 import hmac
+import hashlib
 import json
 import os
 import re
+import sqlite3
 import time
 import unicodedata
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 RACINE = Path(__file__).resolve().parent
 FICHIER_CAS = RACINE / "data" / "cas.json"
@@ -36,6 +38,35 @@ SIGNATURES_IMPORT = {".png": b"\x89PNG\r\n\x1a\n", ".jpg": b"\xff\xd8\xff", ".jp
 TAILLE_MAX_JSON = 2 * 1024 * 1024
 TAILLE_MAX_IMAGE = 10 * 1024 * 1024
 MOT_DE_PASSE = os.environ.get("ADMIN_MOT_DE_PASSE", "")
+FICHIER_STATISTIQUES = RACINE / ".statistiques.sqlite3"
+
+
+def statistiques_cas(cas_id, choix=None, participation=None):
+    """Comptage anonyme, persistant et dédoublonné pour une version du dossier."""
+    if not isinstance(cas_id, str):
+        raise ValueError("Identifiant de dossier invalide.")
+    cas = next((c for c in json.loads(FICHIER_CAS.read_text(encoding="utf-8"))
+                if c.get("id") == cas_id), None)
+    if cas is None:
+        raise ValueError("Dossier inconnu.")
+    modes = [m["id"] for m in json.loads((RACINE / "data/modes.json").read_text(encoding="utf-8"))]
+    if choix is not None:
+        if not isinstance(choix, str) or choix not in modes:
+            raise ValueError("Orientation inconnue.")
+        if not isinstance(participation, str) or not re.fullmatch(r"[a-zA-Z0-9-]{16,80}", participation):
+            raise ValueError("Identifiant de participation invalide.")
+    version = hashlib.sha256(json.dumps(cas, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+    connexion = sqlite3.connect(FICHIER_STATISTIQUES, timeout=10)
+    try:
+        with connexion:
+            connexion.execute("CREATE TABLE IF NOT EXISTS choix (version TEXT, participation TEXT, mode TEXT, PRIMARY KEY (version, participation))")
+            if choix is not None:
+                connexion.execute("INSERT OR IGNORE INTO choix VALUES (?, ?, ?)", (version, participation, choix))
+            comptes = dict(connexion.execute("SELECT mode, COUNT(*) FROM choix WHERE version = ? GROUP BY mode", (version,)))
+            comptes = {mode: comptes.get(mode, 0) for mode in modes}
+            return {"cas_id": cas_id, "total": sum(comptes.values()), "choix": comptes}
+    finally:
+        connexion.close()
 
 
 def slug(texte, defaut="image"):
@@ -51,7 +82,7 @@ class Gestionnaire(SimpleHTTPRequestHandler):
 
     # --- utilitaires -------------------------------------------------------
     def chemin(self):
-        return urlsplit(self.path).path
+        return unquote(urlsplit(self.path).path)
 
     def end_headers(self):
         # Les données et l'admin ne doivent jamais être servis depuis le cache :
@@ -96,6 +127,9 @@ class Gestionnaire(SimpleHTTPRequestHandler):
         except ValueError:
             self.erreur(411, "Taille du contenu manquante.")
             return None
+        if taille < 0:
+            self.erreur(400, "Taille du contenu invalide.")
+            return None
         if taille > taille_max:
             self.erreur(413, f"Fichier trop volumineux (maximum {taille_max // (1024 * 1024)} Mo).")
             return None
@@ -110,6 +144,8 @@ class Gestionnaire(SimpleHTTPRequestHandler):
         c = self.chemin()
         if self.interdit(c):
             return self.send_error(404)
+        if c == "/api/statistiques":
+            return self.statistiques()
         if c.startswith(("/admin", "/api/")) and not self.autorise():
             return
         if c in ("/admin", "/admin/"):
@@ -171,8 +207,29 @@ class Gestionnaire(SimpleHTTPRequestHandler):
             vieux.unlink()
 
     # --- POST /api/images --------------------------------------------------
+    def statistiques(self, enregistrer=False):
+        try:
+            if enregistrer:
+                corps = self.lire_corps(4096)
+                if corps is None:
+                    return
+                donnees = json.loads(corps)
+                if not isinstance(donnees, dict) or not donnees.get("choix"):
+                    raise ValueError("Réponse invalide.")
+                resultat = statistiques_cas(donnees.get("cas_id"), donnees.get("choix"), donnees.get("participation"))
+            else:
+                cas_id = parse_qs(urlsplit(self.path).query).get("cas_id", [None])[0]
+                resultat = statistiques_cas(cas_id)
+        except (ValueError, UnicodeDecodeError) as err:
+            return self.erreur(400, str(err))
+        except (OSError, sqlite3.Error):
+            return self.erreur(503, "Statistiques indisponibles pour le moment.")
+        self.repondre_json(200, resultat)
+
     def do_POST(self):
         url = urlsplit(self.path)
+        if url.path == "/api/statistiques":
+            return self.statistiques(enregistrer=True)
         if url.path != "/api/images":
             return self.erreur(404, "Adresse inconnue.")
         if not self.autorise():

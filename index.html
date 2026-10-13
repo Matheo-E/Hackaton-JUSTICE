@@ -64,6 +64,7 @@
         </button>
         <!-- Plan de travail, sur la bande du bureau : [4 feuilles d'orientation] [tampon] -->
         <div id="plan" class="plan verrouille">
+          <button id="btn-changer-mediateur" class="changer-mediateur" hidden>Changer de médiateur</button>
           <div id="feuilles" class="feuilles"></div>
           <div class="porte-tampon">
             <div id="tampon" class="tampon-outil" title="Glissez le tampon sur une feuille">
@@ -95,6 +96,11 @@
       <h2 id="feedback-titre"></h2>
       <p id="feedback-reponse"></p>
       <p id="feedback-explication" class="explication"></p>
+      <section class="statistiques-joueurs" aria-labelledby="statistiques-titre">
+        <h3 id="statistiques-titre">Les choix des joueurs</h3>
+        <div id="feedback-statistiques" aria-live="polite"></div>
+        <p class="statistiques-note">Ces choix montrent les avis des joueurs ; ils ne déterminent pas l’orientation la plus adaptée.</p>
+      </section>
       <button id="btn-suivant" class="btn-principal">Dossier suivant</button>
     </section>
 
@@ -107,6 +113,14 @@
     </section>
 
     <!-- Fenêtres superposées (même fonctionnement : bouton data-modale="id" pour ouvrir) -->
+    <div id="types-mediateurs" class="modale" role="dialog" aria-modal="true" aria-labelledby="types-mediateurs-titre">
+      <div class="modale-contenu types-mediateurs">
+        <h2 id="types-mediateurs-titre">Choisir une proposition</h2>
+        <p class="propositions-consigne">Choisissez un papier pour le poser sur le bureau, puis tamponnez-le pour retenir cette orientation.</p>
+        <div id="liste-types-mediateurs"></div>
+        <button class="btn-fermer">Retour au bureau</button>
+      </div>
+    </div>
     <!-- Guide ouvert : le contenu est écrit sur les deux pages de book_open.png -->
     <div id="manuel" class="modale" role="dialog" aria-modal="true" aria-labelledby="manuel-titre">
       <div class="livre-ouvert">

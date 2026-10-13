@@ -54,7 +54,8 @@
         "proprietaire": "Mme Grondin",
         "image": "assets/documents_jeu/cas1_courrier_syndic.png",
         "texte": "Madame, nous n'avons reçu à ce jour aucune réclamation concernant le bruit dans votre immeuble.",
-        "detail": "Aucune réclamation concernant le bruit n’a été reçue par le syndic."
+        "detail": "Aucune réclamation concernant le bruit n’a été reçue par le syndic.",
+        "a_demander": true
       }
     ],
     "reponse": "amiable",
@@ -239,7 +240,8 @@
         "proprietaire": "Mathis",
         "image": "assets/documents_jeu/cas4_facture_velo.png",
         "texte": "Client : famille Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €",
-        "detail": "Numéro gravé sur le cadre du vélo acheté par Mathis : VT-48213."
+        "detail": "Numéro gravé sur le cadre du vélo acheté par Mathis : VT-48213.",
+        "a_demander": true
       },
       {
         "titre": "Bon de dépôt-vente du magasin « Occaz Sport »",
