@@ -15,7 +15,10 @@ const CLE_TEST = "justice-test-cas"; // situation à tester, lue par le jeu (/?t
 
 const etat = {
   cas: [],          // situations, au format brut de data/cas.json
-  modes: [],        // data/modes.json : les 4 orientations possibles
+  modes: [],        // data/modes.json : les orientations possibles
+  livre: {},        // data/livre.json : le reste du guide de la résolution amiable
+  vue: "cas",       // "cas" : édition d'une situation ; "guide" : édition du guide
+  guideModifie: false,
   images: { documents: [], personnages: [] },
   sel: 0,           // situation sélectionnée
   modifie: false,   // modifications non enregistrées
@@ -28,11 +31,13 @@ const nomMode = (id) => (etat.modes.find((m) => m.id === id) || {}).nom || "";
 // ---------------------------------------------------------------- chargement
 async function charger() {
   try {
-    const [modes, cas] = await Promise.all([
+    const [modes, cas, livre] = await Promise.all([
       fetch("/data/modes.json", { cache: "no-store" }).then((r) => r.json()),
       fetch("/data/cas.json", { cache: "no-store" }).then((r) => r.json()),
+      fetch("/data/livre.json", { cache: "no-store" }).then((r) => r.json()),
     ]);
     etat.modes = modes;
+    etat.livre = livre;
     etat.cas = cas.map(versEdition);
   } catch {
     afficherBandeau("Impossible de lire les situations du jeu (data/cas.json). Vérifiez que le jeu est lancé avec <code>python3 server.py</code>.");
@@ -112,9 +117,12 @@ function versJeu(c) {
 
 // ------------------------------------------------------------------- rendu
 function rendreTout() {
-  $("vide").hidden = etat.cas.length > 0;
-  $("editeur").hidden = !etat.cas.length;
-  document.querySelector(".outils-actions").hidden = !etat.cas.length;
+  const guide = etat.vue === "guide";
+  $("vide").hidden = guide || etat.cas.length > 0;
+  $("editeur").hidden = !guide && !etat.cas.length;
+  document.querySelector(".outils-actions").hidden = !guide && !etat.cas.length;
+  $("tester").hidden = guide;
+  $("ouvrir-guide").classList.toggle("actif", guide);
   etat.sel = Math.min(etat.sel, Math.max(0, etat.cas.length - 1));
   rendreListe();
   rendreEditeur();
@@ -126,7 +134,7 @@ function rendreListe() {
     const ok = !verifier(c).length;
     const noms = c.personnages.map((p) => p.nom).filter(Boolean).join(" & ") || "Aucun personnage";
     return `<li class="rangee" data-rang="${i}">
-      <button class="item${i === etat.sel ? " actif" : ""}" data-sel="${i}" aria-current="${i === etat.sel}"
+      <button class="item${i === etat.sel && etat.vue === "cas" ? " actif" : ""}" data-sel="${i}" aria-current="${i === etat.sel && etat.vue === "cas"}"
               title="Cliquez pour modifier · glissez pour changer l'ordre">
         <span class="item-num">${i + 1}</span>
         <span class="item-texte">
@@ -157,14 +165,26 @@ $("liste").addEventListener("pointerdown", (e) => {
     // appui long sur la poignée seulement ; ailleurs, le doigt fait défiler la liste
     return;
   }
-  e.preventDefault();          // pas de sélection de texte pendant le glisser
-  glisser = preparerGlisser(li, e.clientY);
-  li.setPointerCapture(e.pointerId);
-  li.classList.add("drague");
-  document.body.classList.add("glisse");
+  if (parPoignee) e.preventDefault(); // la poignée ne sert qu'à glisser
+  // On n'attrape la ligne qu'après un petit déplacement : un simple clic doit
+  // rester un clic et ouvrir la situation.
+  appui = { li, id: e.pointerId, x: e.clientX, y: e.clientY };
 });
 
+let appui = null; // { li, id, x, y } : bouton enfoncé, glisser pas encore commencé
+const SEUIL_GLISSER = 5; // px
+
 $("liste").addEventListener("pointermove", (e) => {
+  if (appui && !glisser && e.pointerId === appui.id) {
+    if (Math.hypot(e.clientX - appui.x, e.clientY - appui.y) < SEUIL_GLISSER) return;
+    const { li, y, id } = appui;
+    appui = null;
+    window.getSelection()?.removeAllRanges();
+    glisser = preparerGlisser(li, y);
+    li.setPointerCapture(id);
+    li.classList.add("drague");
+    document.body.classList.add("glisse");
+  }
   if (!glisser) return;
   glisser.dy = e.clientY - glisser.depY;
   glisser.li.style.transform = `translateY(${glisser.dy}px)`;
@@ -173,6 +193,7 @@ $("liste").addEventListener("pointermove", (e) => {
 });
 
 $("liste").addEventListener("pointerup", (e) => {
+  appui = null;
   if (!glisser) return;
   const { i, cible } = glisser;
   const aBouge = cible !== i;
@@ -180,7 +201,7 @@ $("liste").addEventListener("pointerup", (e) => {
   if (aBouge) { vientDeGlisser = true; deplacerCas(i, cible); }
   else setTimeout(() => { vientDeGlisser = false; }, 0);
 });
-$("liste").addEventListener("pointercancel", () => { if (glisser) terminerGlisser(); });
+$("liste").addEventListener("pointercancel", () => { appui = null; if (glisser) terminerGlisser(); });
 
 function preparerGlisser(li, y) {
   const rangees = [...$("liste").children];
@@ -231,14 +252,16 @@ function deplacerCas(de, vers) {
 
 // Re-rend l'éditeur en gardant le champ actif et la position de défilement.
 function rendreEditeur() {
+  const guide = etat.vue === "guide";
   const c = casCourant();
-  $("titre-edition").textContent = c ? (c.nom_admin || "Sans titre") : "Espace admin";
-  if (!c) { $("editeur").innerHTML = ""; return; }
+  $("titre-edition").textContent = guide ? "Guide de la résolution amiable" : c ? (c.nom_admin || "Sans titre") : "Espace admin";
+  if (!guide && !c) { $("editeur").innerHTML = ""; return; }
   const actif = document.activeElement && document.activeElement.dataset.k;
   const debut = actif && document.activeElement.selectionStart;
   const defilement = $("editeur").parentElement.scrollTop;
-  $("editeur").innerHTML = htmlEditeur(c);
-  majVerification();
+  $("editeur").innerHTML = guide ? htmlGuide() : htmlEditeur(c);
+  $("editeur").classList.toggle("mode-livre", guide);
+  if (!guide) majVerification();
   $("editeur").parentElement.scrollTop = defilement;
   if (actif) {
     const el = $("editeur").querySelector(`[data-k="${CSS.escape(actif)}"]`);
@@ -383,6 +406,130 @@ function htmlEditeur(c) {
   return html.join("");
 }
 
+// ------------------------------------------------- guide de la résolution amiable
+// Édite data/modes.json (les orientations) et data/livre.json (ordre, bon à savoir,
+// types de médiateurs). Chaque champ porte son chemin dans data-gp, ex.
+// « modes.1.points.0 » ou « livre.ordre » ; les listes, leur chemin dans data-gliste.
+const MODELES_GUIDE = {
+  points: () => "",
+  bon_a_savoir: () => "",
+  mediateurs: () => ({ nom: "", pour: "", cout: "", precision: "", source: "" }),
+};
+
+function lireChemin(chemin) {
+  return chemin.split(".").reduce((o, k) => (o == null ? o : o[k]), etat);
+}
+function ecrireChemin(chemin, valeur) {
+  const cles = chemin.split(".");
+  const dernier = cles.pop();
+  const parent = cles.reduce((o, k) => o[k], etat);
+  parent[dernier] = valeur;
+}
+
+// Le guide s'édite sur le livre lui-même : même image, mêmes pages et même
+// typographie que dans le jeu (js/jeu.js, remplirManuel). Chaque texte est
+// directement modifiable à l'endroit où le joueur le lira.
+const ecrit = (chemin, valeur, vide_, { tag = "span", ligne = false } = {}) =>
+  `<${tag} class="ecrit${ligne ? " une-ligne" : ""}" contenteditable="plaintext-only" spellcheck="true"
+     data-k="g-${chemin}" data-gp="${chemin}" data-vide="${echapper(vide_)}" aria-label="${echapper(vide_)}">${echapper(valeur)}</${tag}>`;
+
+const lienSource = (chemin, valeur) =>
+  `<label class="guide-source source-edit" title="Lien vers la source officielle">Source officielle ↗
+     <input data-k="g-${chemin}" data-gp="${chemin}" value="${echapper(valeur)}" placeholder="https://…" aria-label="Lien de la source officielle"></label>`;
+
+function boutonsGuide(liste, i, n) {
+  return `<span class="marge-actions">
+      <button class="icone" data-action="monter" data-gliste="${liste}" data-i="${i}" ${i === 0 ? "disabled" : ""} aria-label="Monter" title="Monter">↑</button>
+      <button class="icone" data-action="descendre" data-gliste="${liste}" data-i="${i}" ${i === n - 1 ? "disabled" : ""} aria-label="Descendre" title="Descendre">↓</button>
+      <button class="icone danger" data-action="supprimer" data-gliste="${liste}" data-i="${i}" aria-label="Supprimer" title="Supprimer">✕</button>
+    </span>`;
+}
+const ajouterGuide = (liste, texte) =>
+  `<button class="ajout-livre" data-action="ajouter" data-gliste="${liste}">＋ ${texte}</button>`;
+
+function puces(chemin, items, classe, vide_, ajout) {
+  return `<ul class="${classe}">${items.map((t, i) => `<li class="editable-ligne">${ecrit(`${chemin}.${i}`, t, vide_)}${boutonsGuide(chemin, i, items.length)}</li>`).join("")}</ul>
+    ${ajouterGuide(chemin, ajout)}`;
+}
+
+function htmlGuide() {
+  const l = etat.livre;
+  const nomMode_ = (m, i) => ecrit(`modes.${i}.nom`, m.nom, "Nom de l'orientation", { ligne: true });
+
+  // Page de gauche : titre, tableau « Je vois… / J'envoie… », ordre conseillé.
+  const gauche = `
+    <h2>Guide de la résolution amiable</h2>
+    <table class="livre-table"><thead><tr><th>Je vois…</th><th>J'envoie…</th></tr></thead><tbody>
+      ${etat.modes.map((m, i) => `<tr><td>${ecrit(`modes.${i}.je_vois`, m.je_vois, "Situation typique (vide : ligne absente du tableau)")}</td>
+        <td><b>${echapper(m.nom)}</b></td></tr>`).join("")}
+    </tbody></table>
+    ${ecrit("livre.ordre", l.ordre, "Ordre conseillé…", { tag: "p" }).replace('class="ecrit', 'class="livre-ordre ecrit')}`;
+
+  // Page de droite : détail des orientations, bon à savoir, types de médiateurs.
+  const meds = l.mediateurs || [];
+  const droite = `
+    <dl>${etat.modes.map((m, i) => `
+      <dt>${nomMode_(m, i)}</dt>
+      <dd>
+        <p class="sur-feuille" title="Texte écrit sur la feuille d'orientation, sur le bureau">Sur la feuille du bureau : ${ecrit(`modes.${i}.resume`, m.resume, "Résumé court", { ligne: true })}</p>
+        ${ecrit(`modes.${i}.description`, m.description, "Description de l'orientation", { tag: "div" })}
+        ${puces(`modes.${i}.points`, m.points || [], "guide-points", "Point détaillé", "un point")}
+        ${lienSource(`modes.${i}.source`, m.source)}
+      </dd>`).join("")}
+    </dl>
+    <h3>Bon à savoir</h3>
+    ${puces("livre.bon_a_savoir", l.bon_a_savoir || [], "bon-a-savoir", "Conseil", "un « bon à savoir »")}
+    <div class="guide-mediateurs"><p class="guide-mediateurs-titre">▾ Les types de médiateurs</p>
+      ${meds.map((t, i) => {
+        const p = `livre.mediateurs.${i}`;
+        return `<div class="guide-type-mediateur editable-ligne">
+          <p class="type-nom">${ecrit(`${p}.nom`, t.nom, "Nom du médiateur", { ligne: true })}${boutonsGuide("livre.mediateurs", i, meds.length)}</p>
+          <p>${ecrit(`${p}.pour`, t.pour, "Pour quelles situations ?")}</p>
+          <p><b>Coût :</b> ${ecrit(`${p}.cout`, t.cout, "Coût", { ligne: true })}</p>
+          <p>${ecrit(`${p}.precision`, t.precision, "Précision")}</p>
+          ${lienSource(`${p}.source`, t.source)}
+        </div>`;
+      }).join("")}
+      ${ajouterGuide("livre.mediateurs", "un type de médiateur")}
+    </div>`;
+
+  return `<p class="aide guide-aide">Voici le livre tel que le joueur l'ouvre sur son bureau. Cliquez sur un texte pour le modifier ;
+      survolez une ligne pour la déplacer ou la supprimer. Les changements s'appliquent à la prochaine partie, une fois enregistrés.</p>
+    <div class="livre-admin">
+      <div class="page page-gauche">${gauche}</div>
+      <div class="page page-droite">${droite}</div>
+    </div>`;
+}
+
+function marquerGuideModifie() {
+  etat.guideModifie = true;
+  majEtat();
+}
+
+// Forme enregistrée : listes sans éléments vides, « points » retiré s'il est vide.
+function guidePourJeu() {
+  const net = (t) => String(t ?? "").trim();
+  const modes = etat.modes.map((m) => {
+    const sortie = { ...m };
+    const points = (m.points || []).filter((t) => net(t));
+    if (points.length) sortie.points = points; else delete sortie.points;
+    return sortie;
+  });
+  const livre = {
+    ...etat.livre,
+    bon_a_savoir: (etat.livre.bon_a_savoir || []).filter((t) => net(t)),
+    mediateurs: (etat.livre.mediateurs || []).filter((t) => net(t.nom)),
+  };
+  return { modes, livre };
+}
+
+function ouvrirGuide() {
+  etat.vue = "guide";
+  $("editeur").parentElement.scrollTop = 0;
+  rendreTout();
+  ouvrirEdition();
+}
+
 function htmlOptionsQui(noms, qui) {
   return `<option value="" ${noms.includes(qui) ? "" : "selected"} disabled>Qui parle ?</option>` +
     noms.map((n) => `<option ${n === qui ? "selected" : ""}>${echapper(n)}</option>`).join("");
@@ -430,9 +577,10 @@ function majVerification() {
 }
 
 function majEtat() {
-  $("etat").textContent = etat.modifie ? "Modifications non enregistrées" : "";
-  $("etat").classList.toggle("visible", etat.modifie);
-  $("enregistrer").disabled = !etat.modifie;
+  const modifie = etat.modifie || etat.guideModifie;
+  $("etat").textContent = modifie ? "Modifications non enregistrées" : "";
+  $("etat").classList.toggle("visible", modifie);
+  $("enregistrer").disabled = !modifie;
 }
 
 function marquerModifie() {
@@ -477,6 +625,11 @@ function renommer(c, ancien, nouveau) {
 
 $("editeur").addEventListener("input", (e) => {
   const el = e.target;
+  if (el.dataset.gp) {
+    ecrireChemin(el.dataset.gp, el.isContentEditable ? el.innerText.replace(/\n$/, "") : el.value);
+    marquerGuideModifie();
+    return;
+  }
   const c = casCourant();
   if (el.dataset.champ) {
     c[el.dataset.champ] = el.value;
@@ -517,6 +670,7 @@ $("editeur").addEventListener("click", (e) => {
   }
   const b = e.target.closest("[data-action]");
   if (!b) return;
+  if (b.dataset.gliste) return actionGuide(b);
   const c = casCourant();
   const liste = c[b.dataset.liste];
   const i = +b.dataset.i;
@@ -569,12 +723,48 @@ $("editeur").addEventListener("click", (e) => {
   }
 });
 
+function actionGuide(b) {
+  const chemin = b.dataset.gliste;
+  if (!lireChemin(chemin)) ecrireChemin(chemin, []); // ex. une orientation sans « points »
+  const liste = lireChemin(chemin);
+  const i = +b.dataset.i;
+  const type = chemin.split(".").pop();
+  switch (b.dataset.action) {
+    case "ajouter": liste.push(MODELES_GUIDE[type]()); break;
+    case "supprimer": {
+      const [retire] = liste.splice(i, 1);
+      toast("Élément supprimé.", () => { liste.splice(i, 0, retire); marquerGuideModifie(); rendreEditeur(); });
+      break;
+    }
+    case "monter": case "descendre": {
+      const j = b.dataset.action === "monter" ? i - 1 : i + 1;
+      [liste[i], liste[j]] = [liste[j], liste[i]];
+      break;
+    }
+    default: return;
+  }
+  marquerGuideModifie();
+  rendreEditeur();
+  if (b.dataset.action === "ajouter") {
+    const champs = $("editeur").querySelectorAll(`[data-gp^="${chemin}."]`);
+    const dernier = [...champs].filter((c) => c.dataset.gp.startsWith(`${chemin}.${liste.length - 1}`))[0];
+    if (dernier) dernier.focus();
+  }
+}
+
+$("ouvrir-guide").addEventListener("click", ouvrirGuide);
+// Champs d'une seule ligne dans le livre : Entrée ne crée pas de retour à la ligne.
+$("editeur").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.target.closest?.(".une-ligne")) { e.preventDefault(); e.target.blur(); }
+});
+
 $("liste").addEventListener("click", (e) => {
   // Après un glisser, le navigateur envoie aussi un clic : on l'ignore, l'ordre a déjà changé.
   if (vientDeGlisser) { vientDeGlisser = false; return; }
-  const b = e.target.closest("[data-sel]");
+  const b = e.target.closest("[data-sel]") || e.target.closest(".rangee")?.querySelector("[data-sel]");
   if (!b) return;
   etat.sel = +b.dataset.sel;
+  if (etat.vue !== "cas") { etat.vue = "cas"; rendreTout(); }
   rendreListe();
   $("editeur").parentElement.scrollTop = 0;
   rendreEditeur();
@@ -588,7 +778,7 @@ $("tester").addEventListener("click", tester);
 $("retour").addEventListener("click", fermerEdition);
 
 document.addEventListener("keydown", (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); if (etat.modifie) enregistrer(); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); if (etat.modifie || etat.guideModifie) enregistrer(); }
   // Alt + ↑ / ↓ : même chose qu'un glisser, au clavier.
   if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown") && !e.target.closest("input, textarea, select")) {
     const vers = etat.sel + (e.key === "ArrowUp" ? -1 : 1);
@@ -599,7 +789,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
 });
-window.addEventListener("beforeunload", (e) => { if (etat.modifie) { e.preventDefault(); e.returnValue = ""; } });
+window.addEventListener("beforeunload", (e) => { if (etat.modifie || etat.guideModifie) { e.preventDefault(); e.returnValue = ""; } });
 
 // Petit écran : liste et éditeur sont deux « pages » ; on glisse de l'une à l'autre.
 function ouvrirEdition() { $("app").classList.add("edition"); }
@@ -611,14 +801,22 @@ async function enregistrer() {
   const incompletes = etat.cas.filter((c) => verifier(c).length).length;
   $("enregistrer").disabled = true;
   $("enregistrer").textContent = "Enregistrement…";
-  try {
-    const r = await fetch("/api/cas", {
+  const envoyer = async (adresse, donnees) => {
+    const r = await fetch(adresse, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(etat.cas.map(versJeu)),
+      body: JSON.stringify(donnees),
     });
     const rep = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(rep.erreur || `Erreur ${r.status}`);
+  };
+  try {
+    if (etat.guideModifie) {
+      await envoyer("/api/guide", guidePourJeu());
+      etat.guideModifie = false;
+    }
+    if (!etat.modifie) return toast("Guide enregistré. Il sera visible à la prochaine partie.");
+    await envoyer("/api/cas", etat.cas.map(versJeu));
     etat.modifie = false;
     toast(incompletes
       ? `Enregistré. ${incompletes} situation${incompletes > 1 ? "s" : ""} à compléter ne ser${incompletes > 1 ? "ont" : "a"} pas jouée${incompletes > 1 ? "s" : ""}.`
@@ -632,10 +830,18 @@ async function enregistrer() {
 }
 
 function telecharger() {
-  const blob = new Blob([JSON.stringify(etat.cas.map(versJeu), null, 2) + "\n"], { type: "application/json" });
-  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "cas.json" });
-  a.click();
-  URL.revokeObjectURL(a.href);
+  const fichier = (nom, donnees) => {
+    const blob = new Blob([JSON.stringify(donnees, null, 2) + "\n"], { type: "application/json" });
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: nom });
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  fichier("cas.json", etat.cas.map(versJeu));
+  if (etat.guideModifie) {
+    const { modes, livre } = guidePourJeu();
+    fichier("modes.json", modes);
+    fichier("livre.json", livre);
+  }
 }
 
 // Tester : joue uniquement cette situation (même non enregistrée) dans un nouvel onglet.

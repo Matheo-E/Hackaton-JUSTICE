@@ -316,3 +316,72 @@ input.champ:focus { padding-inline: .5rem; margin-inline: -.5rem; width: calc(10
   .groupe, .ajouter, .orientation, .verif, textarea.champ { outline: 1.5px solid var(--texte); }
   .etat, .aide, .petit { color: var(--texte); }
 }
+
+/* Entrée « Guide » au-dessus de la liste des situations */
+.guide-entree { padding: 0 .6rem .4rem; border-bottom: 1px solid var(--separateur); margin-bottom: .4rem; }
+.item-guide .item-num { font-size: 1rem; }
+
+/* ------------------------------------------- éditeur du guide : le livre du jeu */
+.editeur.mode-livre { max-width: 78rem; padding-inline: 1rem; }
+.guide-aide { margin: 0 auto 1rem; max-width: 46rem; text-align: center; }
+.livre-admin {
+  position: relative; width: 100%; aspect-ratio: 640 / 396; container-type: inline-size;
+  background: url("/assets/scene/book_open.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, .3)); color: #2b2118;
+  font: 1.15cqi/1.4 Georgia, "Times New Roman", serif;
+}
+.livre-admin .page { position: absolute; top: 5%; bottom: 7%; overflow: hidden auto; padding: 0 2.5%; scrollbar-width: thin; }
+.livre-admin .page-gauche { left: 8%; right: 51.5%; }
+.livre-admin .page-droite { left: 51.5%; right: 7.5%; }
+.livre-admin h2 { font-size: 1.9em; margin: 0 0 .4em; }
+.livre-admin h3 { color: #6b4f3a; margin: .8em 0 .3em; font-size: .8em; }
+.livre-admin dl { margin: 0; }
+.livre-admin dt { font-weight: 700; margin-top: .55em; }
+.livre-admin dd { margin: .1em 0 0; color: #4a3b2f; }
+.livre-admin .livre-table { width: 100%; border-collapse: collapse; margin: .4em 0; }
+.livre-admin .livre-table th { text-align: left; text-transform: uppercase; letter-spacing: .05em; color: #6b4f3a; font-size: .75em; }
+.livre-admin .livre-table th, .livre-admin .livre-table td { padding: .35em .4em; border-bottom: 1px solid #d8cfc2; vertical-align: top; }
+.livre-admin .livre-ordre { font-style: italic; font-weight: 600; }
+.livre-admin ul { margin: .3em 0; padding-left: 1.1em; }
+.livre-admin li { margin-bottom: .3em; }
+.livre-admin .guide-mediateurs-titre { color: #8b2424; font-weight: 700; margin: .8em 0 .2em; }
+.livre-admin .guide-type-mediateur { margin: .6em 0; border-top: 1px solid #d8cfc2; padding-top: .4em; }
+.livre-admin .guide-type-mediateur p { color: #4a3b2f; margin: .3em 0; }
+.livre-admin .type-nom { font-weight: 700; color: #2b2118 !important; }
+.livre-admin .sur-feuille { margin: .1em 0 .3em; font-size: .78em; color: #8a7a6a; font-style: italic; }
+
+/* Texte modifiable : souligné discret, surligné au survol, encadré à l'édition */
+.ecrit { border-radius: 3px; outline: none; cursor: text; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+         text-decoration: underline dotted rgba(139, 36, 36, .35); text-underline-offset: .2em; transition: background-color .15s; }
+div.ecrit, p.ecrit { display: block; }
+.ecrit:hover { background-color: rgba(255, 214, 102, .28); }
+.ecrit:focus { text-decoration: none; background: rgba(255, 236, 170, .6); box-shadow: 0 0 0 2px rgba(139, 36, 36, .45); }
+.ecrit:empty::before { content: attr(data-vide); color: #b3a595; font-style: italic; }
+.une-ligne { overflow-wrap: anywhere; }
+
+.source-edit { display: flex; align-items: baseline; gap: .4em; margin-top: .2em; color: #8b2424; font-size: .8em; }
+.source-edit input { flex: 1; min-width: 0; border: 0; border-bottom: 1px dashed #c9b8a5; background: none;
+                     font: inherit; color: #6b4f3a; padding: 0 .2em; outline: none; }
+.source-edit input:focus { border-bottom-color: #8b2424; background: rgba(255, 236, 170, .5); }
+
+/* Actions d'une ligne : dans la marge, visibles au survol ou au clavier */
+.editable-ligne { position: relative; }
+.marge-actions { display: inline-flex; gap: .1em; margin-left: .3em; vertical-align: middle; opacity: 0; transition: opacity .15s;
+                 font-family: system-ui, sans-serif; }
+.editable-ligne:hover > .marge-actions, .editable-ligne:hover > p > .marge-actions,
+.editable-ligne:focus-within > .marge-actions, .editable-ligne:focus-within > p > .marge-actions { opacity: 1; }
+.marge-actions .icone { width: 1.5em; height: 1.5em; font-size: .75em; border-radius: 50%; background: rgba(255, 255, 255, .85);
+                        box-shadow: 0 1px 2px rgba(0, 0, 0, .2); color: #4a3b2f; }
+.marge-actions .icone.danger { color: #b3261e; }
+.marge-actions .icone:disabled { opacity: .35; }
+.ajout-livre { display: block; margin: .15em 0 .5em; padding: .1em .5em; border: 1px dashed #c9b8a5; border-radius: 4px; background: none;
+               color: #8b2424; font: italic .8em Georgia, serif; cursor: pointer; opacity: .75; }
+.ajout-livre:hover, .ajout-livre:focus-visible { opacity: 1; background: rgba(255, 236, 170, .5); }
+
+/* Petit écran : le livre ne tient pas, les deux pages s'empilent comme des feuilles */
+@media (max-width: 760px) {
+  .livre-admin { aspect-ratio: auto; background: none; filter: none; font-size: 1rem; container-type: normal; }
+  .livre-admin .page { position: static; overflow: visible; padding: 1rem 1.1rem; margin-bottom: 1rem;
+                       background: #fbf6ec; border-radius: 6px; box-shadow: 0 4px 14px rgba(0, 0, 0, .15); }
+  .marge-actions { opacity: 1; }
+}

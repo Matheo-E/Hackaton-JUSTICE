@@ -16,7 +16,7 @@ const context = vm.createContext({console, URLSearchParams, location:{search:''}
   setTimeout, clearTimeout, crypto:webcrypto,
   fetch:async (url, options) => {
     calls.push({url, options});
-    return {ok:!unavailable, json:async()=>({total:3, choix:{amiable:1,conciliateur:1,mediateur:1,tribunal:0}})};
+    return {ok:!unavailable, json:async()=>({total:3, choix:{conciliateur:2,mediateur:1,tribunal:0}})};
   },
   document:{getElementById:get, querySelectorAll:()=>[...nodes.values()]},
   modes:JSON.parse(fs.readFileSync('data/modes.json', 'utf8'))
@@ -24,7 +24,7 @@ const context = vm.createContext({console, URLSearchParams, location:{search:''}
 const run = s => vm.runInContext(s,context);
 const source = fs.readFileSync('js/jeu.js','utf8');
 run(source.slice(0, source.indexOf('\ndocument.querySelectorAll("[data-modale]")')));
-run('etat.modes=modes; const cas={id:"voisins",reponse:"amiable",explication:"Le contexte favorise la discussion.",personnages:[{nom:"Voisins"}],questions:[],indices:[]}; etat.cas=[cas]; etat.resultats=[{cas,choix:"mediateur",correct:false,questions:0,indices:0,tempsRestant:200,penalites:0,appels:0}];');
+run('etat.modes=modes; const cas={id:"voisins",reponse:"conciliateur",explication:"Le contexte favorise la discussion.",personnages:[{nom:"Voisins"}],questions:[],indices:[]}; etat.cas=[cas]; etat.resultats=[{cas,choix:"mediateur",correct:false,questions:0,indices:0,tempsRestant:200,penalites:0,appels:0}];');
 (async () => {
   run('afficherFeedback(cas,"mediateur",false)');
   await new Promise(setImmediate);
@@ -49,10 +49,10 @@ run('etat.modes=modes; const cas={id:"voisins",reponse:"amiable",explication:"Le
   assert.equal(calls.at(-1).options.method,undefined); // Un délai écoulé ne crée pas de vote.
   const before = calls.length;
   context.location.search='?test=1';
-  await run('chargerStatistiques(cas,"amiable")');
+  await run('chargerStatistiques(cas,"conciliateur")');
   assert.equal(calls.length,before);
   context.location.search=''; unavailable=true;
-  await run('chargerStatistiques(cas,"amiable")');
+  await run('chargerStatistiques(cas,"conciliateur")');
   assert(get('feedback-statistiques').textContent.includes('indisponibles'));
   assert(run('htmlStatistiques({total:0,choix:{}},null)').includes('Aucun choix enregistré'));
   console.log('OK : retours neutres, pourcentages à 100 %, envoi sans doublon, bilan, expiration, test exclu et service indisponible.');

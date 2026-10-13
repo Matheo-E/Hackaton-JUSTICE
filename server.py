@@ -11,6 +11,7 @@ Routes ajoutées au service de fichiers statiques :
     GET  /admin             page de l'espace admin (admin/index.html)
     GET  /api/images        liste des images disponibles (documents, personnages)
     PUT  /api/cas           remplace data/cas.json (une sauvegarde de l'ancien est gardée)
+    PUT  /api/guide         remplace data/modes.json et data/livre.json (guide de la résolution amiable)
     POST /api/images?type=documents|personnages&nom=fichier.png   importe une image (corps = le fichier)
 """
 import argparse
@@ -29,6 +30,8 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 RACINE = Path(__file__).resolve().parent
 FICHIER_CAS = RACINE / "data" / "cas.json"
+FICHIER_MODES = RACINE / "data" / "modes.json"
+FICHIER_LIVRE = RACINE / "data" / "livre.json"
 DOSSIER_SAUVEGARDES = RACINE / "data" / "sauvegardes"
 NB_SAUVEGARDES = 30
 DOSSIERS_IMAGES = {"documents": "assets/documents_jeu", "personnages": "assets/characters"}
@@ -67,6 +70,19 @@ def statistiques_cas(cas_id, choix=None, participation=None):
             return {"cas_id": cas_id, "total": sum(comptes.values()), "choix": comptes}
     finally:
         connexion.close()
+
+
+def ecrire_json(fichier, donnees):
+    """Garde une copie horodatée de l'ancien fichier, puis le remplace atomiquement."""
+    if fichier.exists():
+        DOSSIER_SAUVEGARDES.mkdir(exist_ok=True)
+        horodatage = time.strftime("%Y%m%d-%H%M%S")
+        (DOSSIER_SAUVEGARDES / f"{fichier.stem}-{horodatage}.json").write_bytes(fichier.read_bytes())
+        for vieux in sorted(DOSSIER_SAUVEGARDES.glob(f"{fichier.stem}-*.json"))[:-NB_SAUVEGARDES]:
+            vieux.unlink()
+    temporaire = fichier.with_suffix(".json.tmp")
+    temporaire.write_text(json.dumps(donnees, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporaire, fichier)  # remplacement atomique : jamais de fichier à moitié écrit
 
 
 def slug(texte, defaut="image"):
@@ -171,6 +187,8 @@ class Gestionnaire(SimpleHTTPRequestHandler):
 
     # --- PUT /api/cas ------------------------------------------------------
     def do_PUT(self):
+        if self.chemin() == "/api/guide":
+            return self.enregistrer_guide()
         if self.chemin() != "/api/cas":
             return self.erreur(404, "Adresse inconnue.")
         if not self.autorise():
@@ -191,20 +209,36 @@ class Gestionnaire(SimpleHTTPRequestHandler):
             return self.erreur(400, "Chaque situation doit avoir un identifiant.")
         if len(set(ids)) != len(ids):
             return self.erreur(400, "Deux situations ont le même identifiant.")
-        self.sauvegarder_ancien()
-        temporaire = FICHIER_CAS.with_suffix(".json.tmp")
-        temporaire.write_text(json.dumps(cas, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        os.replace(temporaire, FICHIER_CAS)  # remplacement atomique : jamais de fichier à moitié écrit
+        ecrire_json(FICHIER_CAS, cas)
         self.repondre_json(200, {"ok": True, "nombre": len(cas)})
 
-    def sauvegarder_ancien(self):
-        if not FICHIER_CAS.exists():
+    # --- PUT /api/guide ----------------------------------------------------
+    def enregistrer_guide(self):
+        if not self.autorise():
             return
-        DOSSIER_SAUVEGARDES.mkdir(exist_ok=True)
-        horodatage = time.strftime("%Y%m%d-%H%M%S")
-        (DOSSIER_SAUVEGARDES / f"cas-{horodatage}.json").write_bytes(FICHIER_CAS.read_bytes())
-        for vieux in sorted(DOSSIER_SAUVEGARDES.glob("cas-*.json"))[:-NB_SAUVEGARDES]:
-            vieux.unlink()
+        corps = self.lire_corps(TAILLE_MAX_JSON)
+        if corps is None:
+            return
+        try:
+            guide = json.loads(corps)
+        except (ValueError, UnicodeDecodeError):
+            return self.erreur(400, "Données illisibles (JSON invalide).")
+        modes = guide.get("modes") if isinstance(guide, dict) else None
+        livre = guide.get("livre") if isinstance(guide, dict) else None
+        if not isinstance(modes, list) or not all(isinstance(m, dict) for m in modes) or not isinstance(livre, dict):
+            return self.erreur(400, "Le guide doit contenir les orientations et le livre.")
+        # Les identifiants d'orientation sont référencés par les situations et les
+        # statistiques : on peut modifier les textes, pas ajouter ni retirer d'orientation.
+        actuels = [m.get("id") for m in json.loads(FICHIER_MODES.read_text(encoding="utf-8"))]
+        if [m.get("id") for m in modes] != actuels:
+            return self.erreur(400, "Les orientations ne peuvent pas être ajoutées, retirées ni réordonnées ici.")
+        if not all(isinstance(m.get("nom"), str) and m["nom"].strip() for m in modes):
+            return self.erreur(400, "Chaque orientation doit avoir un nom.")
+        if not isinstance(livre.get("mediateurs", []), list) or not isinstance(livre.get("bon_a_savoir", []), list):
+            return self.erreur(400, "Format du livre invalide.")
+        ecrire_json(FICHIER_MODES, modes)
+        ecrire_json(FICHIER_LIVRE, livre)
+        self.repondre_json(200, {"ok": True})
 
     # --- POST /api/images --------------------------------------------------
     def statistiques(self, enregistrer=False):

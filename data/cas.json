@@ -1,15 +1,15 @@
 [
   {
     "id": "musique-trop-forte",
-    "nom_admin": "Cas 1 – La musique trop forte (négociations)",
+    "nom_admin": "Cas 1 – La musique trop forte (conciliateur)",
     "personnages": [
       {
         "nom": "Mme Grondin",
-        "sprite": ""
+        "sprite": "assets/characters/girl.png"
       },
       {
         "nom": "Sébastien",
-        "sprite": ""
+        "sprite": "assets/characters/seb.png"
       }
     ],
     "dialogue": [
@@ -37,28 +37,27 @@
     "documents": [
       {
         "titre": "Attestation de l'employeur de Sébastien",
-        "proprietaire": "Sébastien",
         "image": "assets/documents_jeu/cas1_attestation_employeur.png",
         "texte": "Nous certifions que M. Sébastien Clain occupe un poste d'agent de sécurité de nuit, du lundi au vendredi, de 22 h à 6 h.",
-        "detail": "Horaires de Sébastien : du lundi au vendredi, de 22 h à 6 h."
+        "detail": "Horaires de Sébastien : du lundi au vendredi, de 22 h à 6 h.",
+        "proprietaire": "Sébastien"
       },
       {
         "titre": "Carte professionnelle de Mme Grondin",
-        "proprietaire": "Mme Grondin",
         "image": "assets/documents_jeu/cas1_carte_professionnelle.png",
         "texte": "Commerçante — Marché forain de Saint-Paul — Installation des stands à partir de 5 h.",
-        "detail": "Installation des stands de Mme Grondin à partir de 5 h du matin."
+        "detail": "Installation des stands de Mme Grondin à partir de 5 h du matin.",
+        "proprietaire": "Mme Grondin"
       },
       {
         "titre": "Courrier du syndic de l'immeuble",
-        "proprietaire": "Mme Grondin",
         "image": "assets/documents_jeu/cas1_courrier_syndic.png",
         "texte": "Madame, nous n'avons reçu à ce jour aucune réclamation concernant le bruit dans votre immeuble.",
         "detail": "Aucune réclamation concernant le bruit n’a été reçue par le syndic.",
-        "a_demander": true
+        "proprietaire": "Mme Grondin"
       }
     ],
-    "reponse": "amiable",
+    "reponse": "conciliateur",
     "explication": "Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essayé de discuter, ni entre eux, ni avec le syndic : une simple conversation peut tout régler.",
     "indices": [
       "Compare les horaires indiqués sur leurs documents, Justin.",
@@ -71,11 +70,11 @@
     "personnages": [
       {
         "nom": "M. Payet",
-        "sprite": ""
+        "sprite": "assets/characters/grandpa.png"
       },
       {
         "nom": "Mme Hoarau",
-        "sprite": ""
+        "sprite": "assets/characters/grandma.png"
       }
     ],
     "dialogue": [
@@ -108,24 +107,24 @@
     "documents": [
       {
         "titre": "Reçu du marché forain",
-        "proprietaire": "Mme Hoarau",
         "image": "assets/documents_jeu/cas2_recu_marche.png",
         "texte": "Vendeur : M. Roger Payet — Produit : mangues — Quantité : 15 kg — Prix : 45 €",
-        "detail": "Le vendeur est M. Roger Payet. Il a vendu 15 kg de mangues pour 45 €."
+        "detail": "Le vendeur est M. Roger Payet. Il a vendu 15 kg de mangues pour 45 €.",
+        "proprietaire": "Mme Hoarau"
       },
       {
         "titre": "Lettre recommandée de M. Payet à Mme Hoarau",
-        "proprietaire": "M. Payet",
         "image": "assets/documents_jeu/cas2_lettre_payet.png",
         "texte": "Madame, je vous demande de couper les branches de votre manguier qui dépassent sur mon terrain. Sans réponse de votre part, je saisirai la justice.",
-        "detail": "M. Payet a déjà adressé une demande écrite à sa voisine."
+        "detail": "M. Payet a déjà adressé une demande écrite à sa voisine.",
+        "proprietaire": "M. Payet"
       },
       {
         "titre": "Lettre recommandée de Mme Hoarau à M. Payet",
-        "proprietaire": "Mme Hoarau",
         "image": "assets/documents_jeu/cas2_lettre_hoarau.png",
         "texte": "Monsieur, cet arbre a été planté par mon grand-père. Je refuse de le couper.",
-        "detail": "Mme Hoarau a répondu par écrit : elle refuse de couper l’arbre planté par son grand-père."
+        "detail": "Mme Hoarau a répondu par écrit : elle refuse de couper l’arbre planté par son grand-père.",
+        "proprietaire": "Mme Hoarau"
       }
     ],
     "reponse": "conciliateur",
@@ -141,11 +140,11 @@
     "personnages": [
       {
         "nom": "Léa",
-        "sprite": ""
+        "sprite": "assets/characters/woman.png"
       },
       {
         "nom": "Hugo",
-        "sprite": ""
+        "sprite": "assets/characters/guitar_man.png"
       }
     ],
     "dialogue": [
@@ -176,20 +175,20 @@
     "documents": [
       {
         "titre": "Certificat de dépôt de chanson",
-        "proprietaire": "Léa",
         "image": "assets/documents_jeu/cas3_certificat_depot.png",
         "texte": "Titre : « Lumière du soir » — Paroles : Léa Martin, Hugo Rivière — Musique : Hugo Rivière",
-        "detail": "Les paroles sont déposées au nom de Léa Martin ET Hugo Rivière."
+        "detail": "Les paroles sont déposées au nom de Léa Martin ET Hugo Rivière.",
+        "proprietaire": "Léa"
       },
       {
         "titre": "Courrier de la salle de concert « La Case à Sons »",
+        "image": "assets/documents_jeu/cas3_courrier_salle.png",
+        "texte": "Suite à vos réponses contradictoires et à l'impossibilité de vous joindre ensemble, nous sommes contraints d'annuler votre concert du 14 novembre.",
+        "detail": "La salle a reçu des réponses contradictoires et n’arrive pas à joindre les deux artistes ensemble.",
         "proprietaire": [
           "Léa",
           "Hugo"
-        ],
-        "image": "assets/documents_jeu/cas3_courrier_salle.png",
-        "texte": "Suite à vos réponses contradictoires et à l'impossibilité de vous joindre ensemble, nous sommes contraints d'annuler votre concert du 14 novembre.",
-        "detail": "La salle a reçu des réponses contradictoires et n’arrive pas à joindre les deux artistes ensemble."
+        ]
       }
     ],
     "reponse": "mediateur",
@@ -205,11 +204,11 @@
     "personnages": [
       {
         "nom": "Mathis",
-        "sprite": ""
+        "sprite": "assets/characters/boy.png"
       },
       {
         "nom": "Jordan",
-        "sprite": ""
+        "sprite": "assets/characters/boy.png"
       }
     ],
     "dialogue": [
@@ -237,18 +236,17 @@
     "documents": [
       {
         "titre": "Facture d'achat du vélo",
-        "proprietaire": "Mathis",
         "image": "assets/documents_jeu/cas4_facture_velo.png",
         "texte": "Client : famille Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €",
         "detail": "Numéro gravé sur le cadre du vélo acheté par Mathis : VT-48213.",
-        "a_demander": true
+        "proprietaire": "Mathis"
       },
       {
         "titre": "Bon de dépôt-vente du magasin « Occaz Sport »",
-        "proprietaire": "Jordan",
         "image": "assets/documents_jeu/cas4_bon_depot_vente.png",
         "texte": "Déposant : Jordan Lebon — Article : VTT rouge — N° de cadre : VT-48213 — Prix de vente : 80 €",
-        "detail": "Déposant : Jordan Lebon. Numéro de cadre : VT-48213. Le vélo est proposé à la vente pour 80 €."
+        "detail": "Déposant : Jordan Lebon. Numéro de cadre : VT-48213. Le vélo est proposé à la vente pour 80 €.",
+        "proprietaire": "Jordan"
       }
     ],
     "reponse": "tribunal",
