@@ -34,7 +34,6 @@ function normaliserCas(brut) {
       image: d.image || "",
       type: TYPES_DOCUMENT.includes(d.type) ? d.type : "note",
       texte: d.texte || "",
-      detail: d.detail || "",
     })),
     indices: brut.indices || [],
     reponse: brut.reponse,

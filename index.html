@@ -62,10 +62,6 @@
           <img src="assets/scene/tel.png" alt="">
           <span class="cout-objet">−20 s</span>
         </button>
-        <button id="loupe" class="loupe objet" aria-label="Examiner un document à la loupe, coûte 10 secondes par document" title="Examiner les petits détails (−10 s par document)">
-          <img src="assets/scene/loupe.png" alt="">
-          <span class="cout-objet">−10 s</span>
-        </button>
         <!-- Plan de travail, sur la bande du bureau : [4 feuilles d'orientation] [tampon] -->
         <div id="plan" class="plan verrouille">
           <div id="feuilles" class="feuilles"></div>
@@ -87,7 +83,7 @@
       </div>
       <!-- Bord droit : les documents du client, en pile ; un clic en ouvre un en grand -->
       <aside class="cote cote-documents">
-        <h3><img src="assets/scene/loupe.png" alt="" class="icone"><span id="titre-documents">Documents du client</span></h3>
+        <h3><span id="titre-documents">Documents du client</span></h3>
         <div id="pile-documents" class="pile-documents"></div>
       </aside>
       </div>
@@ -139,10 +135,6 @@
     <div id="dossier" class="modale" role="dialog" aria-modal="true" aria-labelledby="dossier-titre">
       <div class="modale-contenu visionneuse">
         <h2 id="dossier-titre"></h2>
-        <div class="outils-document">
-          <button id="btn-examiner-document" aria-pressed="false">Examiner à la loupe (−10 s)</button>
-          <span id="document-indication" role="status"></span>
-        </div>
         <div id="dossier-contenu" class="document-grand"></div>
         <div class="navigation-docs">
           <button id="doc-precedent" aria-label="Document précédent">‹</button>

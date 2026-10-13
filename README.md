@@ -62,7 +62,7 @@ assets/           images provisoires (SVG), à remplacer (scene/ = fond + bureau
 
 ## Boucle de jeu
 
-Chaque dossier dispose de **5 minutes**. Le chrono continue pendant les dialogues et la consultation du livre ou des documents. Un appel à Papi Papier coûte **20 secondes** ; examiner un document à la loupe coûte **10 secondes**, une seule fois par document et par dossier. La loupe se trouve sur le bureau : elle agrandit l'image et rend lisibles les mentions en petits caractères. Les documents déjà examinés peuvent être agrandis à nouveau gratuitement.
+Chaque dossier dispose de **5 minutes**. Le chrono continue pendant les dialogues et la consultation du guide ou des documents. Un appel à Papi Papier coûte **20 secondes**.
 
 À zéro, le dossier est compté comme non traité et l'explication apparaît avant de passer au suivant. Le chrono s'arrête dès la décision ; chaque nouveau dossier repart à cinq minutes. Le bilan indique les pénalités et les dossiers non traités.
 
@@ -113,7 +113,6 @@ Un « cas » = un ou deux PNJ + leur situation. Tout se passe dans `data/cas.jso
 | `documents[].image` | non | image du document, texte compris (ex. `assets/documents_jeu/cas4_facture_velo.png`) |
 | `documents[].texte` | oui sans image | sans image : texte affiché avec un gabarit CSS. Avec image : transcription (texte alternatif) |
 | `documents[].proprietaire` | non | personnage qui a apporté le document (nom, ou liste de noms si partagé). La pile de droite n'affiche que les documents du personnage sur lequel le joueur a cliqué ; sans propriétaire, le document est visible pour tous |
-| `documents[].detail` | non | mention en petits caractères à examiner à la loupe ; modifiable dans l'espace admin |
 | `documents[].type` | non | gabarit CSS si pas d'image : `sms`, `note` (défaut), `planning`, `annonce` |
 | `indices` | non | conseils de Papi, donnés un par appel au téléphone, dans l'ordre (le plus vague d'abord). Sans indice, le téléphone est masqué |
 | `reponse` | oui | `id` d'un mode de `data/modes.json` : `amiable`, `conciliateur`, `mediateur`, `tribunal` |

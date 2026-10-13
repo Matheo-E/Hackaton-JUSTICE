@@ -34,7 +34,6 @@ function nomDuMode(id) {
 // Une échéance réelle évite de gagner du temps en changeant d'onglet.
 const DUREE_DOSSIER = 5 * 60;
 const COUT_APPEL = 20;
-const COUT_LOUPE = 10;
 let minuterieChrono = null;
 
 function arreterChrono() {
@@ -47,11 +46,8 @@ function demarrerChrono() {
   etat.echeance = Date.now() + DUREE_DOSSIER * 1000;
   etat.penalites = 0;
   etat.appels = 0;
-  etat.documentsExamines = new Set();
   etat.docOuvert = 0;
-  etat.loupeActive = false;
   $("chrono-penalite").textContent = "";
-  $("loupe").disabled = !etat.docs.length;
   actualiserChrono();
   minuterieChrono = setInterval(actualiserChrono, 250);
 }
@@ -85,8 +81,7 @@ function tempsEcoule() {
   const cas = etat.cas[etat.index];
   etat.resultats.push({ cas, choix: null, correct: false, expire: true,
     indices: etat.indicesObtenus, questions: etat.posees.size,
-    penalites: etat.penalites, tempsRestant: 0, appels: etat.appels,
-    documentsExamines: etat.documentsExamines.size });
+    penalites: etat.penalites, tempsRestant: 0, appels: etat.appels });
   afficherFeedback(cas, null, false);
 }
 
@@ -365,8 +360,6 @@ function remplirDossier() {
     ? cas.documents.filter((d) => !d.proprietaires.length || d.proprietaires.includes(etat.selection))
     : [];
   etat.docOuvert = 0;
-  etat.loupeActive = false;
-  $("loupe").disabled = !etat.docs.length;
   $("titre-documents").textContent = etat.selection ? `Documents de ${etat.selection}` : "Documents du client";
   if (!etat.selection) pile.innerHTML = `<p class="vide">Cliquez sur un personnage pour voir ses documents.</p>`;
   else if (!etat.docs.length) pile.innerHTML = `<p class="vide">Ce personnage n’a apporté aucun document.</p>`;
@@ -387,42 +380,10 @@ function ouvrirDocument(i) {
   etat.docOuvert = (i + docs.length) % docs.length;
   const d = docs[etat.docOuvert];
   $("dossier-titre").textContent = d.titre;
-  const examine = etat.documentsExamines.has(etat.docs[etat.docOuvert]);
-  etat.loupeActive = examine;
-  $("dossier-contenu").innerHTML = `<div class="document-zoom">${htmlDocument(d)}</div>${d.detail
-    ? `<aside class="mention-document"><span>Mention en petits caractères</span><p class="detail-minuscule" ${examine ? "" : 'aria-hidden="true"'}>${echapper(d.detail)}</p></aside>` : ""}`;
-  actualiserLoupe();
+  $("dossier-contenu").innerHTML = `<div class="document-zoom">${htmlDocument(d)}</div>`;
   $("doc-position").textContent = `${etat.docOuvert + 1} / ${docs.length}`;
   $("doc-precedent").hidden = $("doc-suivant").hidden = docs.length < 2;
   if (!$("dossier").classList.contains("ouvert")) ouvrirModale("dossier");
-}
-
-function actualiserLoupe() {
-  const examine = etat.documentsExamines.has(etat.docs[etat.docOuvert]);
-  $("dossier-contenu").classList.toggle("document-examine", etat.loupeActive);
-  $("btn-examiner-document").setAttribute("aria-pressed", String(etat.loupeActive));
-  $("btn-examiner-document").textContent = etat.loupeActive
-    ? "Reposer la loupe" : examine ? "Reprendre la loupe (déjà examiné)" : "Examiner à la loupe (−10 s)";
-  $("document-indication").textContent = etat.loupeActive
-    ? "Vue agrandie : faites défiler le document pour lire les détails." : "Utilisez la loupe pour lire les petits caractères.";
-  const detail = $("dossier-contenu").querySelector(".detail-minuscule");
-  if (detail) detail.setAttribute("aria-hidden", String(!etat.loupeActive));
-}
-
-function examinerDocument() {
-  if (!actualiserChrono() || !$("dossier").classList.contains("ouvert")) return;
-  if (!etat.loupeActive && !etat.documentsExamines.has(etat.docs[etat.docOuvert])) {
-    if (!consommerTemps(COUT_LOUPE, "Loupe")) return;
-    etat.documentsExamines.add(etat.docs[etat.docOuvert]);
-  }
-  etat.loupeActive = !etat.loupeActive;
-  actualiserLoupe();
-}
-
-function prendreLoupe() {
-  if (!actualiserChrono() || !etat.docs.length) return;
-  ouvrirDocument(etat.docOuvert || 0);
-  if (!etat.loupeActive) examinerDocument();
 }
 
 // Récap : tout ce qui a été dit jusqu'ici + les indices déjà obtenus.
@@ -484,8 +445,7 @@ function tamponner(modeId, feuille) {
   arreterEcriture();
   fermerModales();
   etat.resultats.push({ cas, choix: modeId, correct, indices: etat.indicesObtenus, questions: etat.posees.size,
-    penalites: etat.penalites, tempsRestant: etat.tempsRestant, appels: etat.appels,
-    documentsExamines: etat.documentsExamines.size });
+    penalites: etat.penalites, tempsRestant: etat.tempsRestant, appels: etat.appels });
 
   // Animation : le tampon frappe (classe .frappe), la feuille reçoit le sceau.
   feuille.querySelector(".sceau").src = SCEAU[correct ? "bonne" : "mauvaise"];
@@ -526,7 +486,7 @@ function afficherRecap() {
   $("recap-liste").innerHTML = etat.resultats
     .map((r) => `<li class="${r.correct ? "ok" : "ko"}">
         <b>${echapper(r.cas.personnages.map((p) => p.nom).join(" & "))}</b> → ${echapper(nomDuMode(r.cas.reponse))}<br>
-        <small>${r.expire ? "Temps écoulé — dossier non traité" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s), ${r.documentsExamines} document(s) examiné(s))</small>
+        <small>${r.expire ? "Temps écoulé — dossier non traité" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s))</small>
         ${r.cas.questions.length ? `<small>Questions posées : ${r.questions} / ${r.cas.questions.length}</small>` : ""}
         ${r.cas.indices.length ? `<small>Conseils de Papi utilisés : ${r.indices} / ${r.cas.indices.length}</small>` : ""}
         <small>${echapper(r.cas.explication)}</small></li>`)
@@ -566,8 +526,6 @@ document.addEventListener("keydown", (e) => {
 });
 $("doc-precedent").addEventListener("click", () => ouvrirDocument(etat.docOuvert - 1));
 $("doc-suivant").addEventListener("click", () => ouvrirDocument(etat.docOuvert + 1));
-$("loupe").addEventListener("click", (e) => { e.stopPropagation(); prendreLoupe(); });
-$("btn-examiner-document").addEventListener("click", examinerDocument);
 
 // Faire avancer le dialogue : clic sur la scène, Entrée ou Espace.
 $("scene").addEventListener("click", repliqueSuivante);

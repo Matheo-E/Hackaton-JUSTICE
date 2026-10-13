@@ -72,17 +72,8 @@ body { margin: 0; background: var(--fond); color: var(--texte); }
 .navigation-docs { display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0; font-weight: 600; }
 .navigation-docs button { font-size: 1.4rem; line-height: 1; padding: .3rem .9rem; border-radius: 999px; box-shadow: var(--ombre); }
 .navigation-docs button[hidden] { visibility: hidden; display: inline-block; }
-.outils-document { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin: .75rem 0; }
-#btn-examiner-document { background: var(--accent); color: #fff; font-weight: 600; }
-#document-indication { color: var(--texte-2); font-size: .8rem; }
 .document-zoom { max-height: 46vh; overflow: auto; border-radius: 6px; background: #fff; }
 .document-zoom > img { max-height: none; box-shadow: none; }
-.document-examine .document-zoom > img { width: 200%; max-width: none; }
-.mention-document { margin-top: .75rem; padding: .75rem 1rem; background: #fff9e9; color: #3e3023; border: 1px solid #d9c9a9; border-radius: 6px; }
-.mention-document > span { display: block; font-size: .7rem; color: #77634f; }
-.mention-document .detail-minuscule { font-size: 6px; line-height: 1.5; color: #77634f; margin: .4rem 0 0; }
-.document-examine .detail-minuscule { font-size: 1rem; color: #3e3023; }
-.document-examine .document-zoom .document { font-size: 1.4rem; }
 
 /* Guide ouvert : le contenu est posé sur les deux pages blanches de book_open.png */
 .livre-ouvert {
@@ -277,7 +268,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .objet:active { transform: scale(.94); }
 .objet[hidden] { display: none; }
 .telephone { right: 2%; bottom: 16%; width: 21%; z-index: 6; }
-.loupe { right: 8%; bottom: 3%; width: 12%; z-index: 6; }
 .objet:disabled { opacity: .4; cursor: not-allowed; }
 .cout-objet {
   position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -300,7 +290,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 /* Plan de travail sur la bande du bureau :
    [4 feuilles d'orientation] [tampon] ; livre et documents sont sur les bords de l'écran (.poste) */
 .plan {
-  /* Feuilles et tampon à gauche ; téléphone et loupe sur la droite. */
+  /* Feuilles et tampon à gauche ; téléphone sur la droite. */
   position: absolute; z-index: 5; left: 3%; right: 26%; top: calc(var(--bord-bureau) + 3%); bottom: 4%;
   display: flex; justify-content: center; align-items: center; gap: 3%;
 }
