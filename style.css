@@ -361,7 +361,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* Appel à Papi */
 .appel { text-align: center; max-width: 26rem; }
-.papi-avatar { width: 96px; height: 96px; border-radius: 50%; box-shadow: var(--ombre); }
+.papi-avatar { width: 96px; height: 96px; margin: 0 auto; border-radius: 50%; box-shadow: var(--ombre); background: var(--surface) url("assets/characters/papier.png") 50% 0 / 260% auto no-repeat; }
 .papi-statut { margin: 0; font-size: .9rem; }
 .sonne .papi-avatar { animation: sonnerie 1s ease-in-out infinite; }
 @keyframes sonnerie { 50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--vert) 25%, transparent); } }
