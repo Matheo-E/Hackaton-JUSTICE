@@ -1,7 +1,7 @@
 # Scripts des cas — Jeu sur les alternatives au procès
 
 > Jeu ludique pour un jeune public. Le joueur reçoit deux personnes en conflit, leur pose des questions, lit les documents du dossier, puis choisit où les orienter.
-> Tous les indices sont **textuels** (SMS, lettres, plannings…) : le joueur lit, il n'a pas d'image à analyser.
+> Tous les indices sont des **documents officiels** (contrats, lettres recommandées, factures, attestations…) à lire : pas d'image à analyser, pas de petits mots.
 
 ---
 
@@ -66,13 +66,15 @@ Ordre logique : **amiable → conciliateur / médiateur → tribunal**.
   → **Sébastien :** « Vers 21 h, avant de partir au travail. »
 
 ### Documents
-1. **Planning de travail de Sébastien**
-   > Poste de nuit — lundi au vendredi — 22 h / 6 h
-2. **Note de Mme Grondin (brouillon jamais envoyé)**
-   > « Je me couche à 21 h, je me lève à 5 h pour le marché. Il faudrait que je lui dise… »
+1. **Attestation de l'employeur de Sébastien**
+   > Nous certifions que M. Sébastien Clain occupe un poste d'agent de sécurité de nuit, du lundi au vendredi, de 22 h à 6 h.
+2. **Carte professionnelle de Mme Grondin**
+   > Commerçante — Marché forain de Saint-Paul — Installation des stands à partir de 5 h.
+3. **Courrier du syndic de l'immeuble**
+   > Madame, nous n'avons reçu à ce jour aucune réclamation concernant le bruit dans votre immeuble.
 
 ### Explication
-Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essayé de discuter : une simple conversation peut tout régler.
+Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essayé de discuter, ni entre eux, ni avec le syndic : une simple conversation peut tout régler.
 
 ---
 
@@ -86,24 +88,26 @@ Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essay
 
 ### Ouverture
 > **M. Payet :** Son arbre dépasse chez moi, les feuilles bouchent ma gouttière !
-> **Mme Hoarau :** Il ne s'en plaignait pas quand il mangeait mes mangues…
+> **Mme Hoarau :** Il ne s'en plaignait pas quand il vendait mes mangues…
 
 ### Questions possibles
+- *« Monsieur, avez-vous un manguier chez vous ? »*
+  → **M. Payet :** « Non, pourquoi ? »
 - *« Les mangues, vous les ramassez par terre ? »*
   → **M. Payet :** « Euh… oui, bien sûr. »
 - *« Avez-vous essayé d'en parler ensemble ? »*
-  → **Mme Hoarau :** « Il m'a écrit un mot, je lui ai répondu. Ça n'a rien donné. »
+  → **Mme Hoarau :** « Il m'a envoyé une lettre, je lui ai répondu. Ça n'a rien donné. »
 
 ### Documents
-1. **SMS de M. Payet à sa fille**
-   > « J'ai encore rempli 3 paniers de mangues sur l'arbre de la voisine, je t'en garde 😄 »
-2. **Mot de M. Payet à Mme Hoarau**
-   > « Coupez vos branches ou j'irai voir la justice. »
-3. **Réponse de Mme Hoarau**
-   > « Cet arbre a été planté par mon grand-père, je n'y toucherai pas. »
+1. **Reçu du marché forain**
+   > Vendeur : M. Roger Payet — Produit : mangues — Quantité : 15 kg — Prix : 45 €
+2. **Lettre recommandée de M. Payet à Mme Hoarau**
+   > Madame, je vous demande de couper les branches de votre manguier qui dépassent sur mon terrain. Sans réponse de votre part, je saisirai la justice.
+3. **Lettre recommandée de Mme Hoarau à M. Payet**
+   > Monsieur, cet arbre a été planté par mon grand-père. Je refuse de le couper.
 
 ### Explication
-Mme Hoarau doit couper les branches qui dépassent, mais M. Payet n'a le droit de garder que les fruits tombés tout seuls chez lui, pas de les cueillir. Chacun a un peu tort, et la discussion directe a échoué : le conciliateur peut leur proposer une solution juste.
+M. Payet n'a pas de manguier, mais il vend 15 kg de mangues au marché : il cueille sur l'arbre de sa voisine, alors qu'il n'a le droit de garder que les fruits tombés tout seuls chez lui. Mme Hoarau, elle, doit couper les branches qui dépassent. Chacun a un peu tort, et les lettres montrent que la discussion directe a échoué : le conciliateur peut leur proposer une solution juste.
 
 ---
 
@@ -126,13 +130,13 @@ Mme Hoarau doit couper les branches qui dépassent, mais M. Payet n'a le droit d
   → **Hugo :** « Non. Plus un mot depuis deux semaines. »
 
 ### Documents
-1. **Ancien message de Hugo à Léa**
-   > « Tes paroles pour le refrain sont trop bien, je les garde telles quelles ! 🎸 »
-2. **Dernier message de Léa à Hugo**
-   > « Si c'est comme ça, je ne veux plus te parler. »
+1. **Certificat de dépôt de chanson**
+   > Titre : « Lumière du soir » — Paroles : Léa Martin, Hugo Rivière — Musique : Hugo Rivière
+2. **Courrier de la salle de concert « La Case à Sons »**
+   > Suite à vos réponses contradictoires et à l'impossibilité de vous joindre ensemble, nous sommes contraints d'annuler votre concert du 14 novembre.
 
 ### Explication
-Ils ont écrit les chansons à deux. Ce sont des amis qui ont peut-être envie de continuer, mais ils n'arrivent plus à se parler seuls. Le médiateur va les aider à renouer le dialogue plutôt que de désigner un gagnant.
+Le certificat prouve que les paroles ont été écrites à deux. Ce sont des amis qui ont peut-être envie de continuer, mais ils n'arrivent plus à se parler seuls, au point de perdre un concert. Le médiateur va les aider à renouer le dialogue plutôt que de désigner un gagnant.
 
 ---
 
@@ -151,35 +155,42 @@ Ils ont écrit les chansons à deux. Ce sont des amis qui ont peut-être envie d
 ### Questions possibles
 - *« Jordan, où est le vélo maintenant ? »*
   → **Jordan :** « Euh… chez moi. Enfin, je crois. »
+- *« Mathis, comment savez-vous que c'est votre vélo ? »*
+  → **Mathis :** « Il a un numéro gravé sur le cadre, c'est écrit sur la facture. »
 
 ### Documents
-1. **Annonce en ligne, publiée par Jordan**
-   > « Vends VTT rouge, autocollant "MATHIS" sur le cadre. Très bon état. 80 €. »
-2. **Message de Mathis à Jordan**
-   > « Tu me le rends quand mon vélo ? »
+1. **Facture d'achat du vélo**
+   > Client : famille Mathis Boyer — VTT rouge — N° de cadre : **VT-48213** — 320 €
+2. **Bon de dépôt-vente du magasin « Occaz Sport »**
+   > Déposant : Jordan Lebon — Article : VTT rouge — N° de cadre : **VT-48213** — Prix de vente : 80 €
 
 ### Explication
-Emprunter, ça se discute. Mais revendre le vélo de quelqu'un, c'est un **vol** : une infraction. Même si les deux veulent s'arranger, ça ne se règle pas à l'amiable ni avec un conciliateur ou un médiateur. Il faut aller voir la justice.
+Le numéro de cadre est le même sur les deux documents : Jordan n'a pas emprunté le vélo, il l'a déposé en magasin pour le revendre. C'est un **vol** : une infraction. Même si les deux veulent s'arranger, ça ne se règle pas à l'amiable ni avec un conciliateur ou un médiateur. Il faut aller voir la justice.
 
 ---
 
 ## Assets nécessaires
 
-### Personnages (portraits ou sprites)
+### Personnages (portraits ou sprites, 2-3 expressions chacun : neutre, fâché, gêné)
 - Mme Grondin (femme âgée)
 - Sébastien (homme jeune)
 - M. Payet (homme âgé)
 - Mme Hoarau (femme adulte)
 - Léa (adolescente / jeune adulte)
-- Hugo (adolescent / jeune adulte, guitare possible)
+- Hugo (adolescent / jeune adulte)
 - Mathis (enfant / ado)
 - Jordan (enfant / ado)
 
-### Modèles de documents (fonds réutilisables, le texte est ajouté par le jeu)
-- **Écran de téléphone / conversation SMS** : utilisé dans les cas 2, 3 et 4
-- **Petit mot manuscrit / papier** : cas 1 et 2
-- **Planning de travail** (tableau simple) : cas 1
-- **Annonce en ligne** (style site de petites annonces, fictif) : cas 4
+### Modèles de documents officiels
+*Fonds réutilisables : le jeu affiche le texte dessus. Noms d'entreprises et logos fictifs.*
+
+| Modèle | Utilisé pour |
+|---|---|
+| **Lettre officielle** (en-tête, date, signature) | Attestation employeur, courrier du syndic, courrier de la salle de concert |
+| **Lettre recommandée** (avec tampon « recommandé ») | Les deux lettres du manguier |
+| **Carte professionnelle** | Carte de Mme Grondin |
+| **Reçu / facture** (tableau avec lignes et total) | Reçu du marché, facture du vélo, bon de dépôt-vente |
+| **Certificat** (cadre, titre centré) | Certificat de dépôt de chanson |
 
 ### Décor et interface
 - Bureau du joueur (décor principal)

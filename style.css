@@ -28,7 +28,90 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--fond); color: var(--texte); }
-#jeu { max-width: 60rem; margin: 0 auto; min-height: 100vh; padding: 0 1.25rem 2rem; }
+#jeu { min-height: 100vh; padding: 0 1.25rem 2rem; }
+/* Écrans simples centrés ; l'écran de jeu, lui, occupe toute la largeur (voir .poste) */
+#ecran-titre, #ecran-feedback, #ecran-recap { max-width: 60rem; margin: 0 auto; }
+
+/* Poste de travail : [guide de la résolution amiable] [scène] [documents du client], sur toute la largeur */
+/* L'écran de jeu tient dans la fenêtre (100dvh) : pas de défilement pour atteindre les questions */
+#jeu:has(#ecran-visiteur.actif) { padding-bottom: 0; }
+.poste { display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(0, 72rem) minmax(9rem, 1fr);
+         gap: 1.5rem; height: 100dvh; }
+.centre { min-width: 0; min-height: 0; display: flex; flex-direction: column; padding-bottom: .75rem; }
+/* La scène garde son ratio et prend la plus grande taille qui tient dans le cadre (unités cqw/cqh) */
+.cadre-scene { flex: 1; min-height: 0; container-type: size; display: flex; justify-content: center; align-items: flex-start; }
+.cadre-scene .scene { width: min(100cqw, 100cqh * 1672 / 1140); }
+.cote { align-self: center; overflow: hidden auto; max-height: 100%; padding: .5rem; scrollbar-width: thin; }
+.pile-documents .miniature img { max-height: min(7rem, 14vh); }
+.pile-documents { gap: min(.9rem, 1.5vh); }
+.cote h3 { text-align: center; }
+
+/* Guide fermé (bord gauche) : un clic l'ouvre */
+.livre-ferme { display: block; width: 100%; max-width: 18rem; margin: 0 auto; padding: 0; background: none;
+               text-align: center; filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+.livre-ferme img { width: 100%; display: block; transition: transform .25s var(--ressort); }
+.livre-ferme:hover img { transform: translateY(-4%) rotate(-2deg); }
+.etiquette { display: inline-block; margin-top: .4rem; font-weight: 600; font-size: .9rem; color: var(--texte-2); }
+
+/* Pile de documents (bord droit) : miniatures en vrac, un clic ouvre la visionneuse */
+.pile-documents { display: flex; flex-direction: column; gap: .9rem; max-width: 16rem; margin: 0 auto; }
+.pile-documents .vide { text-align: center; font-size: .9rem; }
+.miniature { padding: .35rem .35rem .5rem; background: #fff; border-radius: 4px; text-align: center;
+             box-shadow: 0 4px 12px rgba(0,0,0,.18); transform: rotate(var(--rot, 0deg));
+             transition: transform .2s var(--ressort), box-shadow .2s; }
+.miniature:hover { transform: rotate(0deg) scale(1.04); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+.miniature img { width: 100%; max-height: 9rem; object-fit: cover; object-position: top; display: block; border-radius: 2px; }
+.miniature .document { padding: .5rem; font-size: .7rem; text-align: left; }
+.legende { display: block; margin-top: .35rem; font-size: .75rem; font-weight: 600; line-height: 1.25; color: #1d1d1f; }
+
+/* Visionneuse : un document en grand, à feuilleter */
+.visionneuse { max-width: 52rem; }
+.visionneuse h2 { font-size: 1.3rem; }
+.document-grand img { display: block; width: 100%; max-height: 62vh; object-fit: contain; border-radius: 6px;
+                      background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+.navigation-docs { display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0; font-weight: 600; }
+.navigation-docs button { font-size: 1.4rem; line-height: 1; padding: .3rem .9rem; border-radius: 999px; box-shadow: var(--ombre); }
+.navigation-docs button[hidden] { visibility: hidden; display: inline-block; }
+.document-zoom { max-height: 46vh; overflow: auto; border-radius: 6px; background: #fff; }
+.document-zoom > img { max-height: none; box-shadow: none; }
+
+/* Guide ouvert : le contenu est posé sur les deux pages blanches de book_open.png */
+.livre-ouvert {
+  position: relative; width: min(72rem, 96vw, calc(88vh * 640 / 396)); aspect-ratio: 640 / 396;
+  background: url("assets/scene/book_open.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 24px 40px rgba(0,0,0,.35)); color: #2b2118;
+  transform: scale(.94); transition: transform .35s var(--ressort);
+  font: clamp(.6rem, 1.15vw, 1rem)/1.4 Georgia, "Times New Roman", serif;
+}
+.modale.ouvert .livre-ouvert { transform: none; }
+.page { position: absolute; top: 5%; bottom: 7%; overflow: auto; padding: 0 2.5%; }
+.page-gauche { left: 8%; right: 51.5%; }
+.page-droite { left: 51.5%; right: 7.5%; }
+.page h2 { font-size: 1.9em; letter-spacing: 0; margin: 0 0 .4em; color: #2b2118; }
+.page h3 { color: #6b4f3a; margin: .8em 0 .3em; font-size: .8em; }
+.page dl { margin: 0; }
+.page dt { font-weight: 700; margin-top: .55em; }
+.page dd { margin: .1em 0 0; color: #4a3b2f; }
+.page .livre-table { font-size: 1em; margin: .4em 0; }
+.page .livre-table th { color: #6b4f3a; font-size: .75em; }
+.page .livre-table th, .page .livre-table td { padding: .35em .4em; border-color: #d8cfc2; }
+.page .livre-ordre { color: #2b2118; font-style: italic; }
+.bon-a-savoir { margin: 0; padding-left: 1.1em; }
+.bon-a-savoir li { margin-bottom: .35em; }
+.btn-fermer-livre { position: absolute; left: 50%; bottom: -3.2rem; transform: translateX(-50%); width: auto;
+                    padding: .55rem 1.6rem; background: var(--surface); font: 600 1rem/1.2 inherit; font-family: system-ui, sans-serif; }
+
+@media (max-width: 1100px) {
+  /* Pas la place sur les côtés : livre et documents passent sous la scène, côte à côte */
+  .poste { grid-template-columns: 1fr 1fr; height: auto; }
+  .centre { grid-column: 1 / -1; order: -1; }
+  .cadre-scene { container-type: normal; flex: none; }
+  .cadre-scene .scene { width: 100%; }
+  .cote { position: static; padding-top: 0; }
+  .livre-ferme { max-width: 12rem; }
+  .pile-documents { flex-direction: row; flex-wrap: wrap; max-width: none; justify-content: center; }
+  .miniature { width: 8rem; }
+}
 
 /* Typographie : interlignage serré et approche négative pour les grands titres */
 h1, h2 { font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; margin: .5rem 0; }
@@ -45,7 +128,40 @@ p { color: var(--texte-2); }
 
 #ecran-titre, #ecran-feedback, #ecran-recap { text-align: center; padding-top: 12vh; }
 #ecran-titre p { font-size: 1.15rem; max-width: 34rem; margin: 1rem auto 2rem; }
-.logo { width: 96px; height: 96px; border-radius: 24px; box-shadow: var(--ombre); }
+/* Le cabinet en plein écran derrière le menu d'accueil. */
+body:has(#ecran-titre.actif) {
+  background: #3b2c23;
+}
+#jeu:has(#ecran-titre.actif) {
+  min-height: 100dvh;
+  padding-top: clamp(1rem, 4vh, 3rem);
+  background:
+    linear-gradient(rgba(35, 24, 18, .25), rgba(35, 24, 18, .45)),
+    url("assets/scene/back.png") center / cover no-repeat;
+}
+/* Une carte crème translucide garde le logo et les consignes lisibles. */
+#ecran-titre {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem);
+  border: 1px solid #e4d5bd;
+  border-radius: 28px;
+  background: linear-gradient(rgba(255, 253, 248, .93), rgba(243, 231, 212, .9));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 16px 48px rgba(35, 24, 18, .3);
+  color: #34221b;
+}
+#ecran-titre h1 { margin: 0; line-height: 0; }
+.logo { display: block; width: min(100%, 24rem); height: auto; margin: 0 auto; }
+.titre-accroche { display: block; font: 600 clamp(1.15rem, 3vw, 1.5rem)/1.4 Georgia, serif; }
+#ecran-titre p { color: #665246; font-size: 1rem; line-height: 1.7; }
+#ecran-titre .btn-principal {
+  background: #8b2424;
+  color: #fffdf8;
+  box-shadow: 0 6px 18px rgba(139, 36, 36, .2);
+}
+#ecran-titre .btn-principal:focus-visible { outline-color: #8b2424; }
 
 /* Boutons : retour au moment de l'appui (:active), pas au relâchement */
 button {
@@ -65,24 +181,33 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* Barre supérieure : matériau translucide, le contenu défile dessous */
 .barre {
-  position: sticky; top: 0; z-index: 10; margin: 0 -1.25rem 1.25rem; padding: .75rem 1.25rem;
+  position: sticky; top: 0; z-index: 10; margin: 0 0 .5rem; padding: .6rem 0;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
   font-size: .9rem; font-weight: 600;
   background: color-mix(in srgb, var(--fond) 72%, transparent);
   backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 #score { color: var(--texte-2); font-weight: 500; }
-#btn-manuel { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 600; border-radius: 999px; }
 
 /* Scène à la 1re personne, en calques superposés :
    fond (décor) < clients < bureau (premier plan, masque le bas des clients) */
 .scene {
-  position: relative; aspect-ratio: 16 / 7; overflow: hidden;
-  border-radius: var(--rayon); box-shadow: var(--ombre); background: #d9d2c5;
+  /* back.png (1672 x 940) en haut + 200 px de plateau de bureau en dessous, où sont posés
+     les feuilles, le tampon et le téléphone : 1672 x 1140 au total. */
+  position: relative; aspect-ratio: 1672 / 1140; overflow: hidden;
+  border-radius: var(--rayon); box-shadow: var(--ombre); background: #b5682f;
+  --haut-image: 82.456%;  /* 940 / 1140 : hauteur de back.png dans la scène */
+  --bord-bureau: 61.40%;  /* 700 / 1140 : bord du bureau dans la scène */
 }
-.scene-fond, .scene-bureau { position: absolute; left: 0; width: 100%; pointer-events: none; }
-.scene-fond { top: 0; height: 100%; object-fit: cover; }
-.scene-bureau { bottom: 0; height: 26%; z-index: 2; }
+/* Deux copies de back.png, cadrées pareil : le fond, et la bande du bureau devant les clients */
+.scene-fond, .scene-bureau { position: absolute; top: 0; left: 0; width: 100%; height: var(--haut-image); pointer-events: none; }
+.scene-bureau { z-index: 2; clip-path: inset(74.47% 0 0 0); } /* 700 / 940 */
+/* Prolongement du plateau : le bas de back.png (le bois du bureau) étiré sous l'image */
+.scene-plateau {
+  position: absolute; z-index: 2; left: 0; right: 0; top: var(--haut-image); bottom: 0; pointer-events: none;
+  background: url("assets/scene/back.png") 50% 100% / 100% 520% no-repeat;
+  box-shadow: inset 0 14px 18px -12px rgba(0,0,0,.25);
+}
 .visiteurs {
   position: absolute; inset: 6% 0 0 0; z-index: 1;
   display: flex; justify-content: center; align-items: flex-end; gap: 6%;
@@ -105,6 +230,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .visiteur img { transition: filter .3s, transform .3s var(--ressort); }
 .visiteurs:has(.parle) .visiteur:not(.parle) img { filter: brightness(.82) saturate(.8); }
 .visiteur.parle img { transform: translateY(-1.5%); }
+/* Personnage dont on regarde les documents : cliquable, souligné d'un trait d'accent à ses pieds */
+.visiteur { cursor: pointer; }
+.visiteur:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.visiteur.choisi::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: 0; height: .3rem;
+                          border-radius: 999px; background: var(--accent); z-index: 3; pointer-events: none; }
 .visiteur .nom { top: auto; bottom: 42%; z-index: 3; }
 .bulle-scene {
   position: absolute; z-index: 4; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
@@ -120,23 +250,100 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .bulle-scene .a-ecrire { visibility: hidden; } /* réserve la place du texte à venir */
 .bulle-scene .qui { display: none; font-size: .78rem; font-weight: 600; color: var(--accent); }
 @keyframes bulle { from { opacity: 0; transform: translateX(-50%) scale(.85) translateY(8px); } }
-.visiteurs { inset: 22% 0 0 0; }
+.visiteurs { inset: 16% 0 calc(100% - var(--haut-image)) 0; }
 
 .continuer {
-  position: absolute; z-index: 3; right: 1rem; bottom: .8rem; font-size: .8rem; font-weight: 600; color: #fff;
+  position: absolute; z-index: 3; right: 1rem; top: .8rem; font-size: .8rem; font-weight: 600; color: #fff;
   padding: .3rem .8rem; border-radius: 999px; background: rgba(0,0,0,.35);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); pointer-events: none;
 }
 
-/* Téléphone posé sur le bureau */
-.telephone {
-  position: absolute; z-index: 3; left: 6%; bottom: 3%; width: 12%; padding: 0; background: none;
-  border-radius: 12px; transition: transform .15s ease-out, filter .2s;
+/* Téléphone posé au fond du bureau (cliquable) : appeler Papi */
+.objet {
+  position: absolute; z-index: 3; padding: 0; background: none; border-radius: 12px;
+  filter: drop-shadow(0 6px 6px rgba(0,0,0,.35)); transition: transform .15s ease-out, filter .2s;
 }
-.telephone img { width: 100%; display: block; }
-.telephone:hover { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 70%, transparent)); }
-.telephone:active { transform: scale(.94); }
-.telephone[hidden] { display: none; }
+.objet img { width: 100%; display: block; }
+.objet:hover { filter: drop-shadow(0 6px 6px rgba(0,0,0,.35)) drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 70%, transparent)); }
+.objet:active { transform: scale(.94); }
+.objet[hidden] { display: none; }
+.telephone { right: 2%; bottom: 16%; width: 21%; z-index: 6; }
+.objet:disabled { opacity: .4; cursor: not-allowed; }
+.cout-objet {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  padding: .15rem .45rem; white-space: nowrap; border-radius: 999px;
+  background: #38291e; color: #fff5e4; font-size: clamp(.55rem, 1vw, .8rem); font-weight: 700;
+}
+.chrono-bloc { display: flex; flex-direction: column; align-items: center; min-width: 5rem; }
+#chrono { font: 700 1.35rem/1.2 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.urgent { color: var(--rouge); }
+#chrono-penalite { font-size: .7rem; color: var(--rouge); min-height: 1.5em; }
+.chrono-modale {
+  position: fixed; z-index: 30; top: .5rem; right: 1rem; padding: .45rem .8rem;
+  border-radius: 999px; background: var(--surface); color: var(--texte);
+  box-shadow: var(--ombre); font: 700 .9rem/1.3 ui-monospace, monospace;
+}
+.chrono-modale.urgent { color: var(--rouge); }
+.chrono-modale[hidden] { display: none; }
+#ecran-titre .regles-chrono { font-size: .8rem; margin-bottom: .5rem; }
+
+/* Plan de travail sur la bande du bureau :
+   [4 feuilles d'orientation] [tampon] ; livre et documents sont sur les bords de l'écran (.poste) */
+.plan {
+  /* Feuilles et tampon à gauche ; téléphone sur la droite. */
+  position: absolute; z-index: 5; left: 3%; right: 26%; top: calc(var(--bord-bureau) + 3%); bottom: 4%;
+  display: flex; justify-content: center; align-items: center; gap: 3%;
+}
+
+/* Feuilles d'orientation : une par mode, cibles du tampon */
+/* Petites fiches : titre + résumé, puis une case vide où se pose la marque du tampon */
+.feuilles { display: flex; justify-content: center; align-items: center; gap: 2.5%; flex: 1; height: 100%; }
+.feuille {
+  position: relative; overflow: hidden; padding: .45rem .5rem 0; border-radius: 3px; text-align: left;
+  display: flex; flex-direction: column; width: 22%; max-height: 100%;
+  background: #fbfaf6; color: #1d1d1f; box-shadow: 0 3px 8px rgba(0,0,0,.35);
+  transform: rotate(var(--rot, 0deg)); transition: transform .2s var(--ressort), box-shadow .2s;
+  cursor: default; font-size: clamp(.6rem, 1.1vw, .9rem); line-height: 1.25;
+}
+.feuille:nth-child(1) { --rot: -2deg; } .feuille:nth-child(2) { --rot: 1deg; }
+.feuille:nth-child(3) { --rot: -1deg; } .feuille:nth-child(4) { --rot: 2deg; }
+.feuille strong { display: block; font-weight: 700; border-bottom: 1px solid #d2d2d7; padding-bottom: .15rem; margin-bottom: .2rem; }
+.feuille small { display: block; color: #6e6e73; font-size: .85em; }
+.feuille::after { content: ""; display: block; flex: none; height: 3.2em; margin: .3em -.1em .4em;
+                  border: 1px dashed #d2d2d7; border-radius: 3px; }
+.feuille:active { transform: rotate(var(--rot, 0deg)); }
+.feuille.survol { transform: rotate(0deg) translateY(-6%) scale(1.04); box-shadow: 0 0 0 3px var(--accent), 0 8px 16px rgba(0,0,0,.4); }
+/* Le sceau tombe sur la case vide en bas de la fiche (et déborde un peu, comme un vrai coup de tampon) */
+.feuille .sceau { position: absolute; left: 50%; bottom: .1em; width: 4.6em; height: 4.6em; margin-left: -2.3em;
+                  object-fit: contain; opacity: 0; pointer-events: none; }
+.feuille.tamponnee .sceau { animation: sceau .45s .2s var(--ressort) both; }
+@keyframes sceau { from { opacity: 0; transform: rotate(-12deg) scale(1.8); } to { opacity: .92; transform: rotate(-12deg) scale(1); } }
+
+/* Tampon : se saisit et se glisse (glisser-déposer au pointeur, voir initTampon) */
+.porte-tampon { display: flex; align-items: center; justify-content: center; height: 100%; width: 7%; flex: none; }
+.tampon-outil {
+  height: 95%; aspect-ratio: 181 / 599; cursor: grab; touch-action: none; user-select: none;
+  filter: drop-shadow(0 6px 6px rgba(0,0,0,.45)); transition: translate .35s var(--ressort);
+}
+/* L'image a beaucoup de marge transparente : on la cadre sur le tampon lui-même */
+.tampon-outil img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; pointer-events: none;
+                    transform: scale(1.16); }
+.tampon-outil.tenu { cursor: grabbing; transition: none; z-index: 10; filter: drop-shadow(0 18px 14px rgba(0,0,0,.45)); }
+.tampon-outil.frappe { animation: frappe .4s ease-in both; }
+@keyframes frappe { 50% { scale: .85; } }
+.tampon-outil.secoue { animation: secoue .45s ease-in-out; }
+@keyframes secoue { 25% { rotate: -10deg; } 75% { rotate: 10deg; } }
+.plan.decide .tampon-outil { opacity: 0; transition: opacity .3s .5s; }
+
+/* Verrouillé tant que le client n'a pas fini : tampon et feuilles inactifs */
+.plan.verrouille .feuille, .plan.verrouille .tampon-outil { opacity: .55; cursor: not-allowed; }
+.plan.verrouille .tampon-outil { filter: grayscale(.6); }
+
+.icone { height: 1.2em; width: auto; vertical-align: -.25em; margin-right: .35em; }
+.feedback-sceau { display: block; width: 160px; height: 160px; object-fit: contain; margin: 0 auto .5rem;
+                  transform: rotate(-8deg); animation: pastille .45s var(--ressort) both; }
+.feedback-sceau:not([src]) { display: none; }
+#ecran-feedback .feedback-sceau[src] + h2::before { display: none; } /* le sceau remplace la pastille */
 
 .fil { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.25rem; }
 .bulle {
@@ -163,20 +370,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 }
 .btn-raccrocher { width: 100%; background: var(--rouge) !important; color: #fff; }
 
-/* Les tampons restent visibles mais inactifs tant que le client n'a pas fini */
-.choix.verrouille .tampons { opacity: .35; pointer-events: none; }
-.choix.verrouille h3::after { content: " · écoutez d'abord le client"; text-transform: none; letter-spacing: 0; font-weight: 500; }
-
-/* Tampons */
-.choix { margin-top: 2rem; }
-.tampons { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
-.tampon {
-  text-align: left; padding: 1rem 1.1rem; border-radius: var(--rayon); box-shadow: var(--ombre);
-  box-shadow: var(--ombre), inset 0 0 0 1.5px transparent;
-}
-.tampon:hover { box-shadow: var(--ombre), inset 0 0 0 1.5px var(--accent); }
-.tampon strong { display: block; font-weight: 600; letter-spacing: -0.01em; }
-.tampon small { display: block; margin-top: .25rem; color: var(--texte-2); line-height: 1.35; }
 
 /* Feedback */
 #ecran-feedback h2::before {
@@ -230,8 +423,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 @media (max-width: 700px) {
   /* Écran étroit : la bulle prend toute la largeur en haut de la scène, au-dessus des têtes */
-  .scene { aspect-ratio: 3 / 4; }
-  .visiteurs { inset: 38% 0 0 0; }
   /* sans transform sur le client, la bulle se place par rapport à la scène entière */
   .visiteur { position: static; animation-name: apparition; }
   .visiteur.parle img { transform: none; }
@@ -242,8 +433,53 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
                  transform: none; font-size: .9rem; animation-name: entree; }
   .bulle-scene::after { display: none; }
   .barre { flex-wrap: wrap; }
-  .tampons { grid-template-columns: 1fr 1fr; }
 }
+
+/* Questions du joueur : bulle en bas de la scène + liste de questions sous la scène */
+.bulle-joueur {
+  /* Posée juste au-dessus du bord du bureau : plus bas, les feuilles d'orientation la recouvrent. */
+  position: absolute; z-index: 4; left: 50%; bottom: calc(100% - var(--bord-bureau) + 1.5%); transform: translateX(-50%);
+  max-width: min(26rem, 70%); padding: .7rem 1rem; line-height: 1.4; font-size: .95rem;
+  background: var(--accent); color: #fff; border-radius: 18px 18px 6px 18px; box-shadow: var(--ombre);
+  animation: entree .35s var(--ressort) both;
+}
+.bulle-joueur:empty { display: none; }
+.bulle-joueur .a-ecrire { visibility: hidden; }
+.questions { margin-top: .75rem; flex: none; }
+.questions h3 { margin-bottom: .4rem; }
+.questions[hidden] { display: none; }
+.liste-questions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.question {
+  text-align: left; border-radius: 999px; padding: .55rem 1rem; box-shadow: var(--ombre);
+  color: var(--accent); font-weight: 500;
+}
+.question.posee, .question:disabled { opacity: .45; cursor: default; box-shadow: none; text-decoration: line-through; }
+.questions.verrouille .liste-questions { opacity: .35; pointer-events: none; }
+.bulle.joueur { align-self: flex-end; background: color-mix(in srgb, var(--accent) 14%, transparent);
+                border-radius: 18px 18px 6px 18px; }
+
+/* Documents du dossier : gabarits en CSS pur (aucune image), selon le « type » du JSON */
+.documents { display: flex; flex-direction: column; gap: 1rem; margin: 1rem 0; }
+.document { padding: 1rem 1.2rem; border-radius: 14px; color: #1d1d1f; }
+.document h4 { margin: 0 0 .5rem; font-size: .75rem; font-weight: 600; letter-spacing: .05em;
+               text-transform: uppercase; color: #6e6e73; }
+.document p { margin: 0; color: inherit; line-height: 1.45; }
+.doc-sms { background: #e9e9ee; border-radius: 24px; }
+.doc-sms p { display: inline-block; background: #34c759; color: #fff; padding: .55rem .9rem;
+             border-radius: 18px 18px 6px 18px; }
+.doc-note { background: #fff7c2; transform: rotate(-.6deg); font-family: "Segoe Print", "Comic Sans MS", cursive;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.doc-planning { background: #fff; border: 1px solid #d2d2d7;
+                background-image: repeating-linear-gradient(#fff 0 1.6rem, #f2f2f7 1.6rem 3.2rem); }
+.doc-planning p { font-family: ui-monospace, Menlo, monospace; font-weight: 600; }
+.doc-annonce { background: #fff; border: 2px solid #ff9f0a; }
+.doc-annonce p { font-weight: 500; }
+
+/* Guide de la résolution amiable */
+.livre-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .95rem; }
+.livre-table th { text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--texte-2); }
+.livre-table th, .livre-table td { padding: .55rem .6rem; border-bottom: 1px solid color-mix(in srgb, var(--texte-2) 20%, transparent); vertical-align: top; }
+.livre-ordre { font-weight: 600; color: var(--texte); }
 
 /* Accessibilité */
 @media (prefers-reduced-motion: reduce) {
@@ -255,5 +491,5 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .barre, .modale-contenu { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media (prefers-contrast: more) {
-  .visiteurs, .dialogue, .indices, .tampon, .explication, .recap, .modale-contenu { box-shadow: none; outline: 2px solid var(--texte); }
+  .visiteurs, .dialogue, .indices, .feuille, .explication, .recap, .modale-contenu { box-shadow: none; outline: 2px solid var(--texte); }
 }

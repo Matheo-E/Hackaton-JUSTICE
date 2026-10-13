@@ -5,53 +5,97 @@
   <meta name="theme-color" content="#f2f2f7">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Justice Au Choix</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="jeu">
     <!-- 1. Titre -->
     <section id="ecran-titre" class="ecran actif">
-      <img src="assets/logo.svg" alt="Logo (provisoire)" class="logo">
-      <h1>Justice Au Choix</h1>
-      <p>Vous êtes avocat. Des personnes viennent vous exposer leur conflit.<br>
-         Écoutez-les, consultez votre manuel, puis orientez-les vers le bon mode de résolution.</p>
+      <h1><img src="assets/logo.png" alt="Justice Au Choix" class="logo" width="1254" height="1254"></h1>
+      <span class="titre-accroche">À chaque conflit, la bonne voie.</span>
+      <p>Vous êtes avocat. Deux personnes en conflit viennent vous voir.<br>
+         Écoutez-les, posez-leur des questions, lisez les documents du dossier,
+         consultez le guide de la résolution amiable, puis orientez-les au bon endroit.</p>
       <button id="btn-commencer" class="btn-principal" disabled>Chargement…</button>
     </section>
 
     <!-- 2-4. Réception d'un visiteur + choix -->
     <section id="ecran-visiteur" class="ecran">
+      <!-- Poste de travail sur toute la largeur de l'écran :
+           [guide de la résolution amiable] [scène + questions] [documents du client] -->
+      <div class="poste">
+      <!-- Bord gauche : le guide de la résolution amiable (fermé ; un clic l'ouvre) -->
+      <aside class="cote cote-livre">
+        <button id="livre" class="livre-ferme" data-modale="manuel" aria-label="Ouvrir le guide de la résolution amiable">
+          <img src="assets/scene/book_closed-Photoroom.png" alt="">
+          <span class="etiquette">Guide de la résolution amiable</span>
+        </button>
+      </aside>
+      <div class="centre">
       <header class="barre">
         <span id="progression"></span>
         <span id="score"></span>
+        <div class="chrono-bloc">
+          <span id="chrono" role="timer" aria-label="Temps restant pour ce dossier">05:00</span>
+          <span id="chrono-penalite" role="status"></span>
+        </div>
         <span class="actions">
-          <button id="btn-situation" data-modale="situation">Récap de la situation</button>
-          <button id="btn-manuel" data-modale="manuel">Manuel</button>
+          <button id="btn-situation" data-modale="situation">Récap</button>
         </span>
       </header>
       <!-- Vue à la 1re personne : décor, clients debout face à nous, bureau au premier plan.
            Les clients parlent en bulles, une réplique à la fois (clic pour continuer). -->
+      <!-- Cadre qui prend toute la hauteur restante : la scène s'y inscrit sans déborder -->
+      <div class="cadre-scene">
       <div id="scene" class="scene" tabindex="0" aria-live="polite">
-        <img class="scene-fond" src="assets/scene/fond.svg" alt="">
+        <!-- back.png contient déjà le bureau au premier plan : on l'affiche deux fois,
+             la 2e copie découpée sur la bande du bureau passe DEVANT les clients
+             pour cacher le bas de leur corps (même image, donc alignement parfait). -->
+        <img class="scene-fond" src="assets/scene/back.png" alt="">
         <div id="visiteurs" class="visiteurs"></div>
-        <img class="scene-bureau" src="assets/scene/bureau.svg" alt="">
-        <!-- Objet posé sur le bureau : appeler Papi pour un indice -->
-        <button id="telephone" class="telephone" data-modale="papi" aria-label="Téléphone : appeler Papi">
-          <img src="assets/scene/telephone.svg" alt="">
+        <img class="scene-bureau" src="assets/scene/back.png" alt="">
+        <div class="scene-plateau"></div>
+        <!-- Téléphone posé sur le bureau : appeler Papi -->
+        <button id="telephone" class="telephone objet" data-modale="papi" aria-label="Téléphone : appeler Papi Papier, coûte 20 secondes" title="Appeler Papi Papier (−20 s)">
+          <img src="assets/scene/tel.png" alt="">
+          <span class="cout-objet">−20 s</span>
         </button>
+        <!-- Plan de travail, sur la bande du bureau : [4 feuilles d'orientation] [tampon] -->
+        <div id="plan" class="plan verrouille">
+          <div id="feuilles" class="feuilles"></div>
+          <div class="porte-tampon">
+            <div id="tampon" class="tampon-outil" title="Glissez le tampon sur une feuille">
+              <img src="assets/scene/tampon.png" alt="Tampon" draggable="false">
+            </div>
+          </div>
+        </div>
+        <!-- Bulle du joueur quand il pose une question -->
+        <div id="bulle-joueur" class="bulle-joueur" aria-live="polite"></div>
         <span id="continuer" class="continuer">Cliquez pour continuer ›</span>
       </div>
-      <div id="choix" class="choix">
-        <h3>Où orientez-vous ce dossier ?</h3>
-        <div id="tampons" class="tampons"></div>
+      </div>
+      <div id="questions" class="questions">
+        <h3>Poser une question</h3>
+        <div id="liste-questions" class="liste-questions"></div>
+      </div>
+      </div>
+      <!-- Bord droit : les documents du client, en pile ; un clic en ouvre un en grand -->
+      <aside class="cote cote-documents">
+        <h3><span id="titre-documents">Documents du client</span></h3>
+        <div id="pile-documents" class="pile-documents"></div>
+      </aside>
       </div>
     </section>
 
     <!-- 5. Feedback -->
     <section id="ecran-feedback" class="ecran">
+      <img id="feedback-sceau" class="feedback-sceau" alt="">
       <h2 id="feedback-titre"></h2>
       <p id="feedback-reponse"></p>
       <p id="feedback-explication" class="explication"></p>
-      <button id="btn-suivant" class="btn-principal">Visiteur suivant</button>
+      <button id="btn-suivant" class="btn-principal">Dossier suivant</button>
     </section>
 
     <!-- 6. Récap -->
@@ -63,11 +107,15 @@
     </section>
 
     <!-- Fenêtres superposées (même fonctionnement : bouton data-modale="id" pour ouvrir) -->
+    <!-- Guide ouvert : le contenu est écrit sur les deux pages de book_open.png -->
     <div id="manuel" class="modale" role="dialog" aria-modal="true" aria-labelledby="manuel-titre">
-      <div class="modale-contenu">
-        <h2 id="manuel-titre">Manuel des modes de résolution</h2>
-        <dl id="manuel-contenu"></dl>
-        <button class="btn-fermer">Fermer</button>
+      <div class="livre-ouvert">
+        <div class="page page-gauche">
+          <h2 id="manuel-titre">Guide de la résolution amiable</h2>
+          <div id="manuel-page-gauche"></div>
+        </div>
+        <div class="page page-droite" id="manuel-page-droite"></div>
+        <button class="btn-fermer btn-fermer-livre" aria-label="Fermer le livre">Fermer</button>
       </div>
     </div>
 
@@ -76,8 +124,23 @@
         <h2 id="situation-titre">Récap de la situation</h2>
         <h3>Ce qu'on vous a dit</h3>
         <div id="situation-dialogue" class="fil"></div>
-        <h3>Conseils de Papi</h3>
-        <ul id="situation-indices" class="liste-indices"></ul>
+        <div id="situation-indices-bloc">
+          <h3>Conseils de Papi</h3>
+          <ul id="situation-indices" class="liste-indices"></ul>
+        </div>
+        <button class="btn-fermer">Fermer</button>
+      </div>
+    </div>
+
+    <div id="dossier" class="modale" role="dialog" aria-modal="true" aria-labelledby="dossier-titre">
+      <div class="modale-contenu visionneuse">
+        <h2 id="dossier-titre"></h2>
+        <div id="dossier-contenu" class="document-grand"></div>
+        <div class="navigation-docs">
+          <button id="doc-precedent" aria-label="Document précédent">‹</button>
+          <span id="doc-position"></span>
+          <button id="doc-suivant" aria-label="Document suivant">›</button>
+        </div>
         <button class="btn-fermer">Fermer</button>
       </div>
     </div>
@@ -85,13 +148,14 @@
     <div id="papi" class="modale" role="dialog" aria-modal="true" aria-labelledby="papi-titre">
       <div class="modale-contenu appel">
         <img src="assets/papi.svg" alt="" class="papi-avatar">
-        <h2 id="papi-titre">Papi</h2>
+        <h2 id="papi-titre">Papi Papier</h2>
         <p id="papi-statut" class="papi-statut"></p>
         <p id="papi-message" class="bulle-papi"></p>
         <button class="btn-fermer btn-raccrocher">Raccrocher</button>
       </div>
     </div>
   </div>
+  <div id="chrono-modale" class="chrono-modale" role="timer" hidden></div>
   <script src="js/cas.js"></script>
   <script src="js/jeu.js"></script>
 </body>

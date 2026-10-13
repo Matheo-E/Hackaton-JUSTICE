@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f2f7">
+  <title>Espace admin · Justice Au Choix</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <link rel="apple-touch-icon" href="/assets/logo.png">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Barre latérale : la liste des situations, dans l'ordre où elles sont jouées -->
+    <aside class="laterale" aria-label="Situations">
+      <header class="laterale-tete">
+        <h1>Situations</h1>
+        <button id="ajouter" class="bouton-rond" aria-label="Nouvelle situation" title="Nouvelle situation">+</button>
+      </header>
+      <p class="laterale-aide">Jouées dans cet ordre. Cliquez pour modifier, glissez pour changer l'ordre.</p>
+      <ul id="liste" class="liste"></ul>
+      <footer class="laterale-pied">
+        <a href="/" target="_blank" rel="noopener">Ouvrir le jeu ↗</a>
+      </footer>
+    </aside>
+
+    <!-- Zone d'édition -->
+    <main class="principal">
+      <header class="outils">
+        <button id="retour" class="lien retour" aria-label="Retour à la liste">‹ Situations</button>
+        <div class="outils-titre">
+          <h2 id="titre-edition">Espace admin</h2>
+          <span id="etat" class="etat" aria-live="polite"></span>
+        </div>
+        <div class="outils-actions">
+          <button id="tester" class="bouton secondaire" title="Jouer uniquement cette situation, dans un nouvel onglet">Tester</button>
+          <button id="enregistrer" class="bouton primaire" title="Enregistrer (Ctrl+S)">Enregistrer</button>
+        </div>
+      </header>
+      <div id="bandeau" class="bandeau" hidden></div>
+      <div id="editeur" class="editeur"></div>
+      <div id="vide" class="vide" hidden>
+        <p>Aucune situation pour l'instant.</p>
+        <button class="bouton primaire" id="ajouter-vide">Créer une situation</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Choix d'une image (personnage ou document) -->
+  <dialog id="choix-image" class="feuille-modale" aria-labelledby="choix-image-titre">
+    <form method="dialog" class="feuille-contenu">
+      <header class="feuille-tete">
+        <h2 id="choix-image-titre">Choisir une image</h2>
+        <button class="lien" value="annuler">Annuler</button>
+      </header>
+      <div id="feuille-import" class="feuille-import">
+        <label id="bouton-importer" class="bouton primaire importer">Importer une image depuis l'ordinateur…
+          <input id="fichier-image" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        </label>
+        <p class="aide">PNG, JPEG ou WebP, 10 Mo maximum. Vous pouvez aussi glisser le fichier sur cette fenêtre.</p>
+      </div>
+      <div id="grille-images" class="grille-images"></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="/js/cas.js"></script>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>
