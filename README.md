@@ -36,8 +36,8 @@ Pour ajouter ou modifier des situations sans toucher au code ni au JSON.
 Ce qu'il faut savoir :
 - Une situation « À compléter » peut être enregistrée pour ne pas perdre le travail, mais le jeu ne la joue pas.
 - **Ordre de jeu** : c'est l'ordre de la liste de gauche. Pour le changer, glissez une situation à sa nouvelle place (la poignée ≡ aide sur écran tactile), ou Alt + ↑ / ↓ au clavier. Un message permet d'annuler.
-- **Images** : un clic sur la vignette d'un personnage ou d'un document ouvre la galerie des images du projet.
-  - « Depuis l'ordinateur… » (ou le bouton en bas de la fenêtre) importe un fichier PNG, JPEG ou WebP depuis l'ordinateur ; on peut aussi **glisser le fichier directement sur la fenêtre**.
+- **Images** : un clic sur la vignette d'un personnage (ronde) ou d'un document (rectangle) ouvre la fenêtre de choix.
+  - Le bouton bleu **« Importer une image depuis l'ordinateur… »** ouvre le sélecteur de fichiers (PNG, JPEG ou WebP, 10 Mo maximum). On peut aussi glisser un fichier sur la fenêtre.
   - L'image est ajoutée dans `assets/characters/` (personnages) ou `assets/documents_jeu/` (documents). Une image existante n'est jamais écrasée : la nouvelle prend un nom terminé par `-2`, `-3`…
   - Pour un document, si le titre est vide, il est repris du nom du fichier.
 - Renommer un personnage met à jour ses répliques et ses réponses.

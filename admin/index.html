@@ -53,14 +53,13 @@
         <h2 id="choix-image-titre">Choisir une image</h2>
         <button class="lien" value="annuler">Annuler</button>
       </header>
-      <div id="grille-images" class="grille-images"></div>
-      <footer class="feuille-pied">
-        <label class="bouton secondaire importer">
-          Importer une image depuis l'ordinateur…
+      <div id="feuille-import" class="feuille-import">
+        <label id="bouton-importer" class="bouton primaire importer">Importer une image depuis l'ordinateur…
           <input id="fichier-image" type="file" accept="image/png,image/jpeg,image/webp" hidden>
         </label>
-        <p class="aide">PNG, JPEG ou WebP, 10 Mo maximum.</p>
-      </footer>
+        <p class="aide">PNG, JPEG ou WebP, 10 Mo maximum. Vous pouvez aussi glisser le fichier sur cette fenêtre.</p>
+      </div>
+      <div id="grille-images" class="grille-images"></div>
     </form>
   </dialog>
 

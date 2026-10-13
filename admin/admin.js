@@ -634,17 +634,15 @@ function choisirImage(type, i) {
   $("choix-image-titre").textContent = type === "personnages" ? "Image du personnage" : "Image du document";
   const options = [{ chemin: "", libelle: type === "personnages" ? "Silhouette par défaut" : "Pas d'image (texte seul)" }]
     .concat(etat.images[type].map((chemin) => ({ chemin, libelle: chemin.split("/").pop().replace(/\.\w+$/, "").replace(/[_-]+/g, " ") })));
-  // Une tuile « Importer » en tête de grille : le chemin le plus court depuis l'ordinateur.
-  const tuileImporter = etat.serveur
-    ? `<button type="button" class="tuile importer" id="tuile-importer">
-         <span class="sans-image">＋</span><span>Depuis l'ordinateur…</span></button>`
-    : "";
-  $("grille-images").innerHTML = tuileImporter + options.map((o) => `
+  $("grille-images").innerHTML = options.map((o) => `
     <button type="button" class="tuile${o.chemin === actuelle ? " choisie" : ""}" data-chemin="${echapper(o.chemin)}">
       ${o.chemin || type === "personnages" ? `<img src="${echapper(url(o.chemin))}" alt="" loading="lazy">` : `<span class="sans-image">Aa</span>`}
       <span>${echapper(o.libelle)}</span>
-    </button>`).join("") + `<p class="aide depot-aide">Vous pouvez aussi faire glisser un fichier ici.</p>`;
-  $("fichier-image").closest(".feuille-pied").hidden = !etat.serveur;
+    </button>`).join("");
+  $("feuille-import").hidden = !etat.serveur;
+  const bouton = $("bouton-importer"); // remis à zéro à chaque ouverture, quoi qu'il soit arrivé avant
+  bouton.classList.remove("en-cours");
+  bouton.firstChild.textContent = "Importer une image depuis l'ordinateur…";
   $("choix-image").showModal();
 }
 
@@ -652,8 +650,8 @@ function choisirImage(type, i) {
 async function importerFichier(fichier) {
   if (!fichier) return;
   if (!etat.serveur) return toast("Import impossible : lancez le jeu avec python3 server.py.");
-  const tuile = $("tuile-importer");
-  if (tuile) { tuile.classList.add("en-cours"); tuile.lastElementChild.textContent = "Import…"; }
+  const bouton = $("bouton-importer");
+  if (bouton) { bouton.classList.add("en-cours"); bouton.firstChild.textContent = "Import en cours…"; }
   try {
     const r = await fetch(`/api/images?type=${choixEnCours.type}&nom=${encodeURIComponent(fichier.name)}`, { method: "POST", body: fichier });
     const rep = await r.json().catch(() => ({}));
@@ -667,8 +665,10 @@ async function importerFichier(fichier) {
     toast("Image importée dans " + rep.chemin.split("/").slice(0, 2).join("/") + "/");
     appliquerImage(rep.chemin);
   } catch (err) {
-    if (tuile) { tuile.classList.remove("en-cours"); tuile.lastElementChild.textContent = "Depuis l'ordinateur…"; }
     toast("Import impossible : " + (err.message === "Failed to fetch" ? "le serveur ne répond pas." : err.message));
+  } finally {
+    // Dans tous les cas, le bouton redevient cliquable (sinon on ne peut plus importer qu'une image).
+    if (bouton) { bouton.classList.remove("en-cours"); bouton.firstChild.textContent = "Importer une image depuis l'ordinateur…"; }
   }
 }
 
@@ -704,7 +704,6 @@ function appliquerImage(chemin) {
 }
 
 $("grille-images").addEventListener("click", (e) => {
-  if (e.target.closest("#tuile-importer")) return $("fichier-image").click();
   const t = e.target.closest(".tuile[data-chemin]");
   if (t) appliquerImage(t.dataset.chemin);
 });

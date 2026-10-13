@@ -261,19 +261,16 @@ input.champ:focus { padding-inline: .5rem; margin-inline: -.5rem; width: calc(10
 .tuile .sans-image { font-size: 1.6rem; }
 .tuile span:last-child { font-size: .75rem; line-height: 1.25; color: var(--texte-2); overflow-wrap: anywhere; }
 .tuile.choisie img, .tuile.choisie .sans-image { box-shadow: 0 0 0 3px var(--accent); }
-/* Tuile « Depuis l'ordinateur… », toujours en tête de la grille */
-.tuile.importer .sans-image {
-  display: grid; place-items: center; font-size: 2rem; color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: inset 0 0 0 1.5px var(--accent);
+/* Bouton d'import, en tête de la fenêtre : le chemin principal depuis l'ordinateur */
+.feuille-import {
+  display: flex; align-items: center; flex-wrap: wrap; gap: .6rem 1rem;
+  padding: .5rem 1.25rem 1rem; border-bottom: 1px solid var(--separateur);
 }
-.tuile.importer span:last-child { color: var(--accent); font-weight: 500; }
-.tuile.importer.en-cours { opacity: .55; pointer-events: none; }
-.depot-aide { grid-column: 1 / -1; margin: .2rem 0 0; text-align: center; }
+.feuille-import .aide { margin: 0; flex: 1 1 14rem; }
+.importer.en-cours { opacity: .6; pointer-events: none; }
 /* Fichier glissé depuis le bureau sur la feuille : la zone d'arrivée s'entoure */
 .feuille-modale.depot { outline: 3px dashed var(--accent); outline-offset: -10px; }
 .feuille-modale.depot .grille-images { background: color-mix(in srgb, var(--accent) 7%, transparent); }
-.feuille-pied { padding: .85rem 1.25rem 1.1rem; border-top: 1px solid var(--separateur); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.feuille-pied .aide { margin: 0; }
 .importer { cursor: pointer; }
 
 /* -------------------------------------------------------------------- toast */
