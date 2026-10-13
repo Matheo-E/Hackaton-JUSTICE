@@ -1,0 +1,259 @@
+/* Style inspiré des principes de design Apple : police système, hiérarchie par
+   poids/taille, matériaux translucides, retour visuel immédiat à l'appui,
+   transitions sobres (sans rebond) et respect des préférences d'accessibilité. */
+
+:root {
+  --fond: #f2f2f7;
+  --surface: #ffffff;
+  --texte: #1d1d1f;
+  --texte-2: #6e6e73;
+  --accent: #0a66d8;
+  --vert: #248a3d;
+  --rouge: #d70015;
+  --jaune: #fff8e1;
+  --rayon: 18px;
+  --ombre: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --ressort: cubic-bezier(.2, .9, .25, 1); /* approximation d'un ressort amorti critique */
+  color-scheme: light dark;
+  font: 100%/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #000; --surface: #1c1c1e; --texte: #f5f5f7; --texte-2: #a1a1a6;
+    --accent: #2f8cff; --vert: #30d158; --rouge: #ff453a; --jaune: #2c2615;
+    --ombre: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.4);
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--texte); }
+#jeu { max-width: 60rem; margin: 0 auto; min-height: 100vh; padding: 0 1.25rem 2rem; }
+
+/* Typographie : interlignage serré et approche négative pour les grands titres */
+h1, h2 { font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; margin: .5rem 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); }
+h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+h3 { font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+     color: var(--texte-2); margin: 0 0 .6rem; }
+p { color: var(--texte-2); }
+
+/* Écrans : apparition par fondu + léger glissement */
+.ecran { display: none; }
+.ecran.actif { display: block; animation: entree .5s var(--ressort) both; }
+@keyframes entree { from { opacity: 0; transform: translateY(12px); } }
+
+#ecran-titre, #ecran-feedback, #ecran-recap { text-align: center; padding-top: 12vh; }
+#ecran-titre p { font-size: 1.15rem; max-width: 34rem; margin: 1rem auto 2rem; }
+.logo { width: 96px; height: 96px; border-radius: 24px; box-shadow: var(--ombre); }
+
+/* Boutons : retour au moment de l'appui (:active), pas au relâchement */
+button {
+  font: inherit; cursor: pointer; color: var(--texte); background: var(--surface);
+  border: 0; border-radius: 12px; padding: .55rem 1rem;
+  transition: transform .1s ease-out, background-color .2s, box-shadow .2s;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+button:active { transform: scale(.97); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-principal {
+  background: var(--accent); color: #fff; font-weight: 600; font-size: 1.05rem;
+  padding: .85rem 1.8rem; border-radius: 999px; margin-top: 1.5rem;
+}
+.btn-principal:hover { filter: brightness(1.08); }
+.btn-principal:disabled { opacity: .5; cursor: wait; filter: none; }
+
+/* Barre supérieure : matériau translucide, le contenu défile dessous */
+.barre {
+  position: sticky; top: 0; z-index: 10; margin: 0 -1.25rem 1.25rem; padding: .75rem 1.25rem;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  font-size: .9rem; font-weight: 600;
+  background: color-mix(in srgb, var(--fond) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+#score { color: var(--texte-2); font-weight: 500; }
+#btn-manuel { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 600; border-radius: 999px; }
+
+/* Scène à la 1re personne, en calques superposés :
+   fond (décor) < clients < bureau (premier plan, masque le bas des clients) */
+.scene {
+  position: relative; aspect-ratio: 16 / 7; overflow: hidden;
+  border-radius: var(--rayon); box-shadow: var(--ombre); background: #d9d2c5;
+}
+.scene-fond, .scene-bureau { position: absolute; left: 0; width: 100%; pointer-events: none; }
+.scene-fond { top: 0; height: 100%; object-fit: cover; }
+.scene-bureau { bottom: 0; height: 26%; z-index: 2; }
+.visiteurs {
+  position: absolute; inset: 6% 0 0 0; z-index: 1;
+  display: flex; justify-content: center; align-items: flex-end; gap: 6%;
+}
+.visiteur { position: relative; height: 100%; animation: arrivee .6s var(--ressort) both; }
+.visiteur:nth-child(2) { animation-delay: .12s; }
+.visiteur img { height: 100%; width: auto; display: block; }
+.visiteur .nom {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%); white-space: nowrap;
+  padding: .2rem .7rem; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--texte);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+@keyframes apparition { from { opacity: 0; } }
+@keyframes arrivee { from { opacity: 0; transform: translateY(6%) scale(.97); } }
+
+/* Bulles de dialogue dans la scène, au-dessus de celui qui parle */
+.scene { cursor: pointer; }
+.scene:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.visiteur img { transition: filter .3s, transform .3s var(--ressort); }
+.visiteurs:has(.parle) .visiteur:not(.parle) img { filter: brightness(.82) saturate(.8); }
+.visiteur.parle img { transform: translateY(-1.5%); }
+.visiteur .nom { top: auto; bottom: 42%; z-index: 3; }
+.bulle-scene {
+  position: absolute; z-index: 4; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: min(22rem, 42vw); padding: .7rem 1rem; line-height: 1.4;
+  background: var(--surface); color: var(--texte); border-radius: 18px; box-shadow: var(--ombre);
+  font-size: .95rem; animation: bulle .35s var(--ressort) both; transform-origin: bottom center;
+}
+.bulle-scene::after {
+  content: ""; position: absolute; top: 100%; left: 50%; margin-left: -8px;
+  border: 8px solid transparent; border-top-color: var(--surface);
+}
+.bulle-scene:empty { display: none; }
+.bulle-scene .a-ecrire { visibility: hidden; } /* réserve la place du texte à venir */
+.bulle-scene .qui { display: none; font-size: .78rem; font-weight: 600; color: var(--accent); }
+@keyframes bulle { from { opacity: 0; transform: translateX(-50%) scale(.85) translateY(8px); } }
+.visiteurs { inset: 22% 0 0 0; }
+
+.continuer {
+  position: absolute; z-index: 3; right: 1rem; bottom: .8rem; font-size: .8rem; font-weight: 600; color: #fff;
+  padding: .3rem .8rem; border-radius: 999px; background: rgba(0,0,0,.35);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); pointer-events: none;
+}
+
+/* Téléphone posé sur le bureau */
+.telephone {
+  position: absolute; z-index: 3; left: 6%; bottom: 3%; width: 12%; padding: 0; background: none;
+  border-radius: 12px; transition: transform .15s ease-out, filter .2s;
+}
+.telephone img { width: 100%; display: block; }
+.telephone:hover { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 70%, transparent)); }
+.telephone:active { transform: scale(.94); }
+.telephone[hidden] { display: none; }
+
+.fil { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.25rem; }
+.bulle {
+  align-self: flex-start; max-width: 90%; padding: .65rem .95rem;
+  background: var(--fond); border-radius: 18px 18px 18px 6px; line-height: 1.4;
+}
+.bulle b { display: block; font-size: .78rem; color: var(--accent); font-weight: 600; }
+.liste-indices { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-direction: column; gap: .4rem; }
+.liste-indices li { background: var(--jaune); border-radius: 12px; padding: .5rem .8rem; }
+.liste-indices li.vide { background: none; color: var(--texte-2); padding: 0; }
+.modale-contenu h3 { margin-top: 1rem; }
+.actions { display: flex; gap: .5rem; }
+#btn-situation { background: color-mix(in srgb, var(--texte-2) 14%, transparent); font-weight: 600; border-radius: 999px; }
+
+/* Appel à Papi */
+.appel { text-align: center; max-width: 26rem; }
+.papi-avatar { width: 96px; height: 96px; border-radius: 50%; box-shadow: var(--ombre); }
+.papi-statut { margin: 0; font-size: .9rem; }
+.sonne .papi-avatar { animation: sonnerie 1s ease-in-out infinite; }
+@keyframes sonnerie { 50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--vert) 25%, transparent); } }
+.bulle-papi {
+  margin: 1rem 0; padding: .9rem 1.1rem; text-align: left; color: var(--texte);
+  background: var(--jaune); border-radius: 18px 18px 18px 6px; animation: entree .4s var(--ressort) both;
+}
+.btn-raccrocher { width: 100%; background: var(--rouge) !important; color: #fff; }
+
+/* Les tampons restent visibles mais inactifs tant que le client n'a pas fini */
+.choix.verrouille .tampons { opacity: .35; pointer-events: none; }
+.choix.verrouille h3::after { content: " · écoutez d'abord le client"; text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+/* Tampons */
+.choix { margin-top: 2rem; }
+.tampons { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+.tampon {
+  text-align: left; padding: 1rem 1.1rem; border-radius: var(--rayon); box-shadow: var(--ombre);
+  box-shadow: var(--ombre), inset 0 0 0 1.5px transparent;
+}
+.tampon:hover { box-shadow: var(--ombre), inset 0 0 0 1.5px var(--accent); }
+.tampon strong { display: block; font-weight: 600; letter-spacing: -0.01em; }
+.tampon small { display: block; margin-top: .25rem; color: var(--texte-2); line-height: 1.35; }
+
+/* Feedback */
+#ecran-feedback h2::before {
+  content: ""; display: block; width: 72px; height: 72px; margin: 0 auto 1rem; border-radius: 50%;
+  background: currentColor; animation: pastille .45s var(--ressort) both;
+  -webkit-mask: var(--icone) center/40px no-repeat; mask: var(--icone) center/40px no-repeat, linear-gradient(#000 0 0);
+  mask-composite: exclude; -webkit-mask-composite: xor;
+}
+@keyframes pastille { from { transform: scale(.6); opacity: 0; } }
+.bonne { color: var(--vert);
+  --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.mauvaise { color: var(--rouge);
+  --icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+#feedback-reponse b { color: var(--texte); }
+.explication {
+  max-width: 38rem; margin: 1.5rem auto 0; padding: 1.25rem 1.5rem; text-align: left;
+  background: var(--surface); color: var(--texte); border-radius: var(--rayon); box-shadow: var(--ombre);
+}
+
+/* Récap */
+.gros { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 700; letter-spacing: -0.03em; color: var(--texte); margin: .5rem 0; }
+.recap { list-style: none; padding: 0; max-width: 38rem; margin: 1.5rem auto 0; text-align: left;
+         background: var(--surface); border-radius: var(--rayon); box-shadow: var(--ombre); overflow: hidden; }
+.recap li { padding: .9rem 1.25rem .9rem 3rem; position: relative; border-bottom: 1px solid color-mix(in srgb, var(--texte-2) 18%, transparent); }
+.recap li:last-child { border-bottom: 0; }
+.recap li::before { position: absolute; left: 1.2rem; top: .9rem; font-weight: 700; }
+.recap li.ok::before { content: "✓"; color: var(--vert); }
+.recap li.ko::before { content: "✕"; color: var(--rouge); }
+.recap small { display: block; color: var(--texte-2); margin-top: .2rem; }
+
+/* Manuel : feuille modale avec voile assombri, qui naît du bouton Manuel */
+.modale {
+  position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 1rem;
+  background: rgba(0,0,0,.32); opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .3s var(--ressort), visibility 0s .3s;
+}
+.modale.ouvert { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .3s var(--ressort); }
+.modale-contenu {
+  width: 100%; max-width: 40rem; max-height: 85vh; overflow: auto; padding: 1.75rem;
+  border-radius: 24px; box-shadow: 0 24px 64px rgba(0,0,0,.25);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+  transform-origin: top right; transform: scale(.94) translateY(-8px);
+  transition: transform .35s var(--ressort);
+}
+.modale.ouvert .modale-contenu { transform: none; }
+.modale-contenu dl { margin: 1rem 0; }
+.modale-contenu dt { font-weight: 600; margin-top: 1rem; }
+.modale-contenu dd { margin: .2rem 0 0; color: var(--texte-2); }
+.btn-fermer { width: 100%; background: color-mix(in srgb, var(--texte-2) 14%, transparent); font-weight: 600; }
+
+@media (max-width: 700px) {
+  /* Écran étroit : la bulle prend toute la largeur en haut de la scène, au-dessus des têtes */
+  .scene { aspect-ratio: 3 / 4; }
+  .visiteurs { inset: 38% 0 0 0; }
+  /* sans transform sur le client, la bulle se place par rapport à la scène entière */
+  .visiteur { position: static; animation-name: apparition; }
+  .visiteur.parle img { transform: none; }
+  /* le nom de celui qui parle est écrit dans la bulle (l'autre client est assombri) */
+  .visiteur .nom { display: none; }
+  .bulle-scene .qui { display: block; }
+  .bulle-scene { top: -60%; bottom: auto; left: 4%; right: 4%; width: auto; max-width: none;
+                 transform: none; font-size: .9rem; animation-name: entree; }
+  .bulle-scene::after { display: none; }
+  .barre { flex-wrap: wrap; }
+  .tampons { grid-template-columns: 1fr 1fr; }
+}
+
+/* Accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; }
+  .modale-contenu { transform: none !important; }
+  button:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .barre, .modale-contenu { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .visiteurs, .dialogue, .indices, .tampon, .explication, .recap, .modale-contenu { box-shadow: none; outline: 2px solid var(--texte); }
+}

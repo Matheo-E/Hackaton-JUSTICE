@@ -1,0 +1,26 @@
+[
+  {
+    "id": "negociation",
+    "nom": "Négociation directe",
+    "resume": "Les parties s'arrangent elles-mêmes",
+    "description": "[Texte provisoire] Les parties s'arrangent elles-mêmes. Description détaillée du manuel à rédiger."
+  },
+  {
+    "id": "conciliation",
+    "nom": "Conciliation",
+    "resume": "Un conciliateur de justice, gratuit, aide à trouver un accord",
+    "description": "[Texte provisoire] Un conciliateur de justice, gratuit, aide à trouver un accord. Description détaillée du manuel à rédiger."
+  },
+  {
+    "id": "mediation",
+    "nom": "Médiation",
+    "resume": "Un médiateur aide les parties à renouer le dialogue",
+    "description": "[Texte provisoire] Un médiateur aide les parties à renouer le dialogue. Description détaillée du manuel à rédiger."
+  },
+  {
+    "id": "juge",
+    "nom": "Juge nécessaire",
+    "resume": "L'amiable n'est pas adapté : il faut saisir la justice",
+    "description": "[Texte provisoire] L'amiable n'est pas adapté : il faut saisir la justice. Description détaillée du manuel à rédiger."
+  }
+]

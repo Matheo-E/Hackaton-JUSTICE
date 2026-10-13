@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 180" preserveAspectRatio="none">
+<!-- PROVISOIRE : bord du bureau au premier plan (vue à la 1re personne) -->
+<rect width="1600" height="180" fill="#7a5a3a"/><rect width="1600" height="22" fill="#94704b"/>
+<rect x="1100" y="40" width="260" height="110" rx="6" fill="#f3efe6" transform="rotate(-4 1230 95)"/>
+<rect x="300" y="60" width="140" height="70" rx="10" fill="#3d3d44"/>
+</svg>

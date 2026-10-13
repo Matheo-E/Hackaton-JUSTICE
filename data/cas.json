@@ -1,0 +1,106 @@
+[
+  {
+    "id": "cas-1",
+    "nom_admin": "[Provisoire] Situation 1",
+    "personnages": [
+      {
+        "nom": "Visiteur A",
+        "sprite": ""
+      }
+    ],
+    "dialogue": [
+      {
+        "qui": "Visiteur A",
+        "texte": "[Texte provisoire] Visiteur A expose son problème ici."
+      }
+    ],
+    "indices": [
+      "[indice provisoire 1]",
+      "[indice provisoire 2]"
+    ],
+    "reponse": "negociation",
+    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Négociation directe »."
+  },
+  {
+    "id": "cas-2",
+    "nom_admin": "[Provisoire] Situation 2",
+    "personnages": [
+      {
+        "nom": "Visiteur B",
+        "sprite": ""
+      },
+      {
+        "nom": "Visiteur C",
+        "sprite": ""
+      }
+    ],
+    "dialogue": [
+      {
+        "qui": "Visiteur B",
+        "texte": "[Texte provisoire] Visiteur B expose son problème ici."
+      },
+      {
+        "qui": "Visiteur C",
+        "texte": "[Texte provisoire] Visiteur C expose son problème ici."
+      }
+    ],
+    "indices": [
+      "[indice provisoire 1]",
+      "[indice provisoire 2]"
+    ],
+    "reponse": "conciliation",
+    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Conciliation »."
+  },
+  {
+    "id": "cas-3",
+    "nom_admin": "[Provisoire] Situation 3",
+    "personnages": [
+      {
+        "nom": "Visiteur D",
+        "sprite": ""
+      },
+      {
+        "nom": "Visiteur E",
+        "sprite": ""
+      }
+    ],
+    "dialogue": [
+      {
+        "qui": "Visiteur D",
+        "texte": "[Texte provisoire] Visiteur D expose son problème ici."
+      },
+      {
+        "qui": "Visiteur E",
+        "texte": "[Texte provisoire] Visiteur E expose son problème ici."
+      }
+    ],
+    "indices": [
+      "[indice provisoire 1]",
+      "[indice provisoire 2]"
+    ],
+    "reponse": "mediation",
+    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Médiation »."
+  },
+  {
+    "id": "cas-4",
+    "nom_admin": "[Provisoire] Situation 4",
+    "personnages": [
+      {
+        "nom": "Visiteur F",
+        "sprite": ""
+      }
+    ],
+    "dialogue": [
+      {
+        "qui": "Visiteur F",
+        "texte": "[Texte provisoire] Visiteur F expose son problème ici."
+      }
+    ],
+    "indices": [
+      "[indice provisoire 1]",
+      "[indice provisoire 2]"
+    ],
+    "reponse": "juge",
+    "explication": "[Explication provisoire] Pourquoi la bonne réponse est « Juge nécessaire »."
+  }
+]

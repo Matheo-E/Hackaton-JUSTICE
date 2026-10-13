@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#f2f2f7">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Justice Au Choix</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="jeu">
+    <!-- 1. Titre -->
+    <section id="ecran-titre" class="ecran actif">
+      <img src="assets/logo.svg" alt="Logo (provisoire)" class="logo">
+      <h1>Justice Au Choix</h1>
+      <p>Vous êtes avocat. Des personnes viennent vous exposer leur conflit.<br>
+         Écoutez-les, consultez votre manuel, puis orientez-les vers le bon mode de résolution.</p>
+      <button id="btn-commencer" class="btn-principal" disabled>Chargement…</button>
+    </section>
+
+    <!-- 2-4. Réception d'un visiteur + choix -->
+    <section id="ecran-visiteur" class="ecran">
+      <header class="barre">
+        <span id="progression"></span>
+        <span id="score"></span>
+        <span class="actions">
+          <button id="btn-situation" data-modale="situation">Récap de la situation</button>
+          <button id="btn-manuel" data-modale="manuel">Manuel</button>
+        </span>
+      </header>
+      <!-- Vue à la 1re personne : décor, clients debout face à nous, bureau au premier plan.
+           Les clients parlent en bulles, une réplique à la fois (clic pour continuer). -->
+      <div id="scene" class="scene" tabindex="0" aria-live="polite">
+        <img class="scene-fond" src="assets/scene/fond.svg" alt="">
+        <div id="visiteurs" class="visiteurs"></div>
+        <img class="scene-bureau" src="assets/scene/bureau.svg" alt="">
+        <!-- Objet posé sur le bureau : appeler Papi pour un indice -->
+        <button id="telephone" class="telephone" data-modale="papi" aria-label="Téléphone : appeler Papi">
+          <img src="assets/scene/telephone.svg" alt="">
+        </button>
+        <span id="continuer" class="continuer">Cliquez pour continuer ›</span>
+      </div>
+      <div id="choix" class="choix">
+        <h3>Où orientez-vous ce dossier ?</h3>
+        <div id="tampons" class="tampons"></div>
+      </div>
+    </section>
+
+    <!-- 5. Feedback -->
+    <section id="ecran-feedback" class="ecran">
+      <h2 id="feedback-titre"></h2>
+      <p id="feedback-reponse"></p>
+      <p id="feedback-explication" class="explication"></p>
+      <button id="btn-suivant" class="btn-principal">Visiteur suivant</button>
+    </section>
+
+    <!-- 6. Récap -->
+    <section id="ecran-recap" class="ecran">
+      <h2>Fin de la journée</h2>
+      <p id="recap-score" class="gros"></p>
+      <ul id="recap-liste" class="recap"></ul>
+      <button id="btn-rejouer" class="btn-principal">Rejouer</button>
+    </section>
+
+    <!-- Fenêtres superposées (même fonctionnement : bouton data-modale="id" pour ouvrir) -->
+    <div id="manuel" class="modale" role="dialog" aria-modal="true" aria-labelledby="manuel-titre">
+      <div class="modale-contenu">
+        <h2 id="manuel-titre">Manuel des modes de résolution</h2>
+        <dl id="manuel-contenu"></dl>
+        <button class="btn-fermer">Fermer</button>
+      </div>
+    </div>
+
+    <div id="situation" class="modale" role="dialog" aria-modal="true" aria-labelledby="situation-titre">
+      <div class="modale-contenu">
+        <h2 id="situation-titre">Récap de la situation</h2>
+        <h3>Ce qu'on vous a dit</h3>
+        <div id="situation-dialogue" class="fil"></div>
+        <h3>Conseils de Papi</h3>
+        <ul id="situation-indices" class="liste-indices"></ul>
+        <button class="btn-fermer">Fermer</button>
+      </div>
+    </div>
+
+    <div id="papi" class="modale" role="dialog" aria-modal="true" aria-labelledby="papi-titre">
+      <div class="modale-contenu appel">
+        <img src="assets/papi.svg" alt="" class="papi-avatar">
+        <h2 id="papi-titre">Papi</h2>
+        <p id="papi-statut" class="papi-statut"></p>
+        <p id="papi-message" class="bulle-papi"></p>
+        <button class="btn-fermer btn-raccrocher">Raccrocher</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/cas.js"></script>
+  <script src="js/jeu.js"></script>
+</body>
+</html>

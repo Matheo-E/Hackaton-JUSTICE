@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320">
+<!-- PROVISOIRE : silhouette d'un client debout, cadrée jusqu'à la taille -->
+<circle cx="100" cy="80" r="44" fill="#8fa3bd"/>
+<path d="M20 320c0-100 34-150 80-150s80 50 80 150z" fill="#8fa3bd"/>
+</svg>
