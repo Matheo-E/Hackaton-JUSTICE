@@ -476,11 +476,10 @@ function remplirSituation() {
 let minuterieAppel;
 function appelerPapi() {
   if (!actualiserChrono()) return;
-  etat.appels++;
-  if (!consommerTemps(COUT_APPEL, "Téléphone")) return;
   const cas = etat.cas[etat.index];
   clearTimeout(minuterieAppel);
   $("papi-message").hidden = true;
+  // Plus rien à apprendre : l'appel ne coûte rien.
   if (etat.indicesObtenus >= cas.indices.length) {
     $("papi-statut").textContent = "En ligne";
     $("papi-message").textContent = cas.indices.length
@@ -490,12 +489,16 @@ function appelerPapi() {
     $("papi-message").hidden = false;
     return;
   }
+  etat.appels++;
+  if (!consommerTemps(COUT_APPEL, "Téléphone")) return;
+  // L'indice payé est acquis tout de suite : raccrocher avant la fin de la sonnerie
+  // ne le fait pas perdre (il reste visible dans le récap).
+  const indice = cas.indices[etat.indicesObtenus++];
   $("papi-statut").textContent = "Appel en cours…";
   $("papi").classList.add("sonne");
   minuterieAppel = setTimeout(() => {
     if (etat.decision) return;
     $("papi").classList.remove("sonne");
-    const indice = cas.indices[etat.indicesObtenus++];
     $("papi-statut").textContent = `Indice ${etat.indicesObtenus} / ${cas.indices.length}`;
     $("papi-message").textContent = indice;
     $("papi-message").hidden = false;
@@ -621,7 +624,7 @@ function afficherRecap() {
         <b>${echapper(r.cas.personnages.map((p) => p.nom).join(" & "))}</b><br>
         ${r.choix ? `Votre proposition : ${echapper(r.mediateur || nomDuMode(r.choix))}<br>` : ""}
         Piste la plus adaptée : ${echapper(nomDuMode(r.cas.reponse))}<br>
-        <small>${r.expire ? "Temps écoulé — une piste à reprendre" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s))</small>
+        <small>${r.expire ? "Temps écoulé — une piste à reprendre" : `${r.tempsRestant} s restantes`} · Pénalité : −${r.penalites} s (${r.appels} appel(s))</small>
         ${r.cas.questions.length ? `<small>Questions posées : ${r.questions} / ${r.cas.questions.length}</small>` : ""}
         ${r.cas.documents?.some((d) => d.aDemander) ? `<small>Pièces complémentaires demandées : ${r.documentsDemandes || 0} / ${r.cas.documents.filter((d) => d.aDemander).length}</small>` : ""}
         ${r.cas.indices.length ? `<small>Conseils de Papi utilisés : ${r.indices} / ${r.cas.indices.length}</small>` : ""}

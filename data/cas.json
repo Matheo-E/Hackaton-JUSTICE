@@ -61,7 +61,7 @@
     "reponse": "amiable",
     "explication": "Ils ont des horaires opposés et ne le savaient pas. Personne n'a vraiment essayé de discuter, ni entre eux, ni avec le syndic : une simple conversation peut tout régler.",
     "indices": [
-      "Compare les horaires indiqués sur leurs documents, Justin.",
+      "Compare les horaires indiqués sur leurs documents, mon petit.",
       "Regarde le courrier du syndic : quelqu’un a-t-il vraiment signalé le problème ?"
     ]
   },
@@ -239,7 +239,7 @@
         "titre": "Facture d'achat du vélo",
         "proprietaire": "Mathis",
         "image": "assets/documents_jeu/cas4_facture_velo.png",
-        "texte": "Client : famille Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €",
+        "texte": "Client : M. et Mme Boyer, pour Mathis Boyer — VTT rouge — N° de cadre : VT-48213 — 320 €",
         "detail": "Numéro gravé sur le cadre du vélo acheté par Mathis : VT-48213.",
         "a_demander": true
       },
@@ -252,7 +252,7 @@
       }
     ],
     "reponse": "tribunal",
-    "explication": "Le numéro de cadre est le même sur les deux documents : Jordan n'a pas emprunté le vélo, il l'a déposé en magasin pour le revendre. C'est un vol : une infraction. Même si les deux veulent s'arranger, ça ne se règle pas à l'amiable ni avec un conciliateur ou un médiateur. Il faut aller voir la justice.",
+    "explication": "Le numéro de cadre est le même sur les deux documents : Jordan n'a pas emprunté le vélo, il l'a déposé en magasin pour le revendre. C'est un vol : une infraction. Même si les deux veulent s'arranger, ça ne se règle pas à l'amiable ni avec un conciliateur ou un médiateur. Il faut porter plainte : c'est au juge de trancher.",
     "indices": [
       "Compare les numéros de cadre sur les deux documents.",
       "Le bon du magasin parle d’une vente. Est-ce cohérent avec un simple emprunt ?"
