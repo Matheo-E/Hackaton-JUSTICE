@@ -1,9 +1,9 @@
 [
   {
     "id": "amiable",
-    "nom": "À l'amiable",
-    "resume": "Les deux personnes se parlent directement",
-    "description": "Les deux personnes se parlent directement, sans personne entre elles. À essayer en premier.",
+    "nom": "Négociations",
+    "resume": "Les deux personnes négocient, avec ou sans tiers",
+    "description": "Les deux personnes négocient elles-mêmes, avec ou sans tiers (seules, ou aidées d'une personne de confiance). À essayer en premier.",
     "je_vois": "Un malentendu, personne n'a encore vraiment discuté"
   },
   {

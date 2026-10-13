@@ -54,8 +54,8 @@ style.css         mise en page
 js/jeu.js         boucle principale
 js/cas.js         chargement + validation des cas
 data/cas.json     les cas (personnages, ouverture, questions, documents, réponse, explication)
-data/modes.json   les 4 choix = boutons « tampons » + lignes du livre juridique
-data/livre.json   livre juridique : ordre logique + « Bon à savoir » (facultatif)
+data/modes.json   les 4 orientations = feuilles du bureau + lignes du guide
+data/livre.json   guide de la résolution amiable : ordre logique + « Bon à savoir » (facultatif)
 Scripts/          scripts des cas rédigés par l'équipe contenu (source de data/)
 assets/           images provisoires (SVG), à remplacer (scene/ = fond + bureau)
 ```
@@ -68,7 +68,7 @@ Chaque dossier dispose de **5 minutes**. Le chrono continue pendant les dialogue
 
 ```
 Titre -> [Ouverture -> questions (facultatif) -> choix d'un tampon -> Feedback] x N cas -> Récap -> Rejouer
-           ^ Livre juridique, Dossier (documents) et Récap consultables à tout moment (Échap pour fermer)
+           ^ Guide de la résolution amiable, documents du client et Récap consultables à tout moment (Échap pour fermer)
 ```
 
 ## Ajouter / modifier un PNJ et sa situation
@@ -146,7 +146,7 @@ Déroulé d'un client :
 
 1. Le client arrive et parle en **bulles**, une réplique à la fois (clic sur la scène, Entrée ou Espace pour continuer). Le personnage qui ne parle pas est légèrement assombri.
 2. **Décision au tampon** : 4 feuilles d'orientation (une par mode de `data/modes.json`) sont posées sur le bureau. Le joueur saisit le tampon (`assets/scene/tampon.png`) et le glisse sur la bonne feuille (souris ou doigt). La feuille reçoit le sceau `certified.png` (bonne réponse) ou `banned.png` (mauvaise), puis l'écran d'explication s'affiche. Le tampon est grisé tant que l'ouverture n'est pas terminée. Au clavier : Tab jusqu'à une feuille puis Entrée.
-   - **Bord gauche de l'écran** : le livre juridique fermé (`book_closed-Photoroom.png`). Un clic l'ouvre en grand (`book_open.png`) : tableau « Je vois… / J'envoie… » sur la page de gauche, détail des choix et « Bon à savoir » sur celle de droite.
+   - **Bord gauche de l'écran** : le guide de la résolution amiable, fermé (`book_closed-Photoroom.png`). Un clic l'ouvre en grand (`book_open.png`) : tableau « Je vois… / J'envoie… » sur la page de gauche, détail des choix et « Bon à savoir » sur celle de droite.
    - **Bord droit de l'écran** : les documents du client, en pile de miniatures. Elle montre les documents du personnage sur lequel on clique (rien s'il n'en a pas). Un clic sur un document l'ouvre en grand ; ‹ › ou les flèches du clavier pour feuilleter.
    - Sous 1100 px de large, livre et documents passent sous la scène.
 3. **Questions** : le joueur pose une question (bulle bleue), le ou les personnages répondent en bulle. Une question posée est barrée.

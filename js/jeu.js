@@ -121,7 +121,7 @@ async function charger() {
   $("btn-commencer").textContent = "Ouvrir le cabinet";
 }
 
-// Livre juridique : tableau « Je vois… / J'envoie… », détail des modes, bon à savoir.
+// Guide de la résolution amiable : tableau « Je vois… / J'envoie… », détail des modes, bon à savoir.
 function remplirManuel() {
   const lignes = etat.modes.filter((m) => m.je_vois)
     .map((m) => `<tr><td>${echapper(m.je_vois)}</td><td><b>${echapper(m.nom)}</b></td></tr>`).join("");
@@ -453,7 +453,7 @@ function appelerPapi() {
     $("papi-message").textContent = cas.indices.length
       ? "Je t'ai déjà tout dit, mon petit. Regarde ton récap !"
       // Cas sans indice rédigé : Papi renvoie vers les outils du joueur.
-      : "Pose-leur des questions, lis bien leurs documents et regarde ton livre juridique, mon petit !";
+      : "Pose-leur des questions, lis bien leurs documents et regarde ton guide, mon petit !";
     $("papi-message").hidden = false;
     return;
   }

@@ -17,21 +17,20 @@
       <span class="titre-accroche">À chaque conflit, la bonne voie.</span>
       <p>Vous êtes avocat. Deux personnes en conflit viennent vous voir.<br>
          Écoutez-les, posez-leur des questions, lisez les documents du dossier,
-         consultez votre livre juridique, puis orientez-les au bon endroit.</p>
-      <p class="regles-chrono">5 minutes par dossier · Appel à Papi : −20 s · Loupe : −10 s par document</p>
+         consultez le guide de la résolution amiable, puis orientez-les au bon endroit.</p>
       <button id="btn-commencer" class="btn-principal" disabled>Chargement…</button>
     </section>
 
     <!-- 2-4. Réception d'un visiteur + choix -->
     <section id="ecran-visiteur" class="ecran">
       <!-- Poste de travail sur toute la largeur de l'écran :
-           [livre juridique] [scène + questions] [documents du client] -->
+           [guide de la résolution amiable] [scène + questions] [documents du client] -->
       <div class="poste">
-      <!-- Bord gauche : le livre juridique (fermé ; un clic l'ouvre) -->
+      <!-- Bord gauche : le guide de la résolution amiable (fermé ; un clic l'ouvre) -->
       <aside class="cote cote-livre">
-        <button id="livre" class="livre-ferme" data-modale="manuel" aria-label="Ouvrir le livre juridique">
+        <button id="livre" class="livre-ferme" data-modale="manuel" aria-label="Ouvrir le guide de la résolution amiable">
           <img src="assets/scene/book_closed-Photoroom.png" alt="">
-          <span class="etiquette">Livre juridique</span>
+          <span class="etiquette">Guide de la résolution amiable</span>
         </button>
       </aside>
       <div class="centre">
@@ -112,11 +111,11 @@
     </section>
 
     <!-- Fenêtres superposées (même fonctionnement : bouton data-modale="id" pour ouvrir) -->
-    <!-- Livre juridique ouvert : le contenu est écrit sur les deux pages de book_open.png -->
+    <!-- Guide ouvert : le contenu est écrit sur les deux pages de book_open.png -->
     <div id="manuel" class="modale" role="dialog" aria-modal="true" aria-labelledby="manuel-titre">
       <div class="livre-ouvert">
         <div class="page page-gauche">
-          <h2 id="manuel-titre">Livre juridique</h2>
+          <h2 id="manuel-titre">Guide de la résolution amiable</h2>
           <div id="manuel-page-gauche"></div>
         </div>
         <div class="page page-droite" id="manuel-page-droite"></div>
