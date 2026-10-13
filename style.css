@@ -126,7 +126,40 @@ p { color: var(--texte-2); }
 
 #ecran-titre, #ecran-feedback, #ecran-recap { text-align: center; padding-top: 12vh; }
 #ecran-titre p { font-size: 1.15rem; max-width: 34rem; margin: 1rem auto 2rem; }
-.logo { width: 96px; height: 96px; border-radius: 24px; box-shadow: var(--ombre); }
+/* Le cabinet en plein écran derrière le menu d'accueil. */
+body:has(#ecran-titre.actif) {
+  background: #3b2c23;
+}
+#jeu:has(#ecran-titre.actif) {
+  min-height: 100dvh;
+  padding-top: clamp(1rem, 4vh, 3rem);
+  background:
+    linear-gradient(rgba(35, 24, 18, .25), rgba(35, 24, 18, .45)),
+    url("assets/scene/back.png") center / cover no-repeat;
+}
+/* Une carte crème translucide garde le logo et les consignes lisibles. */
+#ecran-titre {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem);
+  border: 1px solid #e4d5bd;
+  border-radius: 28px;
+  background: linear-gradient(rgba(255, 253, 248, .93), rgba(243, 231, 212, .9));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 16px 48px rgba(35, 24, 18, .3);
+  color: #34221b;
+}
+#ecran-titre h1 { margin: 0; line-height: 0; }
+.logo { display: block; width: min(100%, 24rem); height: auto; margin: 0 auto; }
+.titre-accroche { display: block; font: 600 clamp(1.15rem, 3vw, 1.5rem)/1.4 Georgia, serif; }
+#ecran-titre p { color: #665246; font-size: 1rem; line-height: 1.7; }
+#ecran-titre .btn-principal {
+  background: #8b2424;
+  color: #fffdf8;
+  box-shadow: 0 6px 18px rgba(139, 36, 36, .2);
+}
+#ecran-titre .btn-principal:focus-visible { outline-color: #8b2424; }
 
 /* Boutons : retour au moment de l'appui (:active), pas au relâchement */
 button {
