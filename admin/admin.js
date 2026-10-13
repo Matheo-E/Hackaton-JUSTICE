@@ -343,6 +343,11 @@ function htmlEditeur(c) {
             <textarea class="champ" rows="3" data-k="dt-${i}" data-liste="documents" data-i="${i}" data-cle="texte"
               placeholder="${d.image ? "Ce qui est écrit sur l'image (lu par les lecteurs d'écran)" : "Contenu du document, affiché tel quel"}"
               aria-label="Contenu du document ${i + 1}">${echapper(d.texte)}</textarea>
+            <label>Mention en petits caractères (à lire avec la loupe)
+              <textarea class="champ" rows="2" data-k="dd-${i}" data-liste="documents" data-i="${i}" data-cle="detail"
+                placeholder="Une petite information utile pour comprendre le dossier…"
+                aria-label="Petit détail du document ${i + 1}">${echapper(d.detail || "")}</textarea>
+            </label>
           </div>
         </div>
       </div>`).join("") || vide("Aucun document."),

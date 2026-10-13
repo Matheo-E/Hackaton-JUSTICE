@@ -18,6 +18,7 @@
       <p>Vous êtes avocat. Deux personnes en conflit viennent vous voir.<br>
          Écoutez-les, posez-leur des questions, lisez les documents du dossier,
          consultez votre livre juridique, puis orientez-les au bon endroit.</p>
+      <p class="regles-chrono">5 minutes par dossier · Appel à Papi : −20 s · Loupe : −10 s par document</p>
       <button id="btn-commencer" class="btn-principal" disabled>Chargement…</button>
     </section>
 
@@ -37,6 +38,10 @@
       <header class="barre">
         <span id="progression"></span>
         <span id="score"></span>
+        <div class="chrono-bloc">
+          <span id="chrono" role="timer" aria-label="Temps restant pour ce dossier">05:00</span>
+          <span id="chrono-penalite" role="status"></span>
+        </div>
         <span class="actions">
           <button id="btn-situation" data-modale="situation">Récap</button>
         </span>
@@ -54,8 +59,13 @@
         <img class="scene-bureau" src="assets/scene/back.png" alt="">
         <div class="scene-plateau"></div>
         <!-- Téléphone posé sur le bureau : appeler Papi -->
-        <button id="telephone" class="telephone objet" data-modale="papi" aria-label="Téléphone : appeler Papi">
+        <button id="telephone" class="telephone objet" data-modale="papi" aria-label="Téléphone : appeler Papi Papier, coûte 20 secondes" title="Appeler Papi Papier (−20 s)">
           <img src="assets/scene/tel.png" alt="">
+          <span class="cout-objet">−20 s</span>
+        </button>
+        <button id="loupe" class="loupe objet" aria-label="Examiner un document à la loupe, coûte 10 secondes par document" title="Examiner les petits détails (−10 s par document)">
+          <img src="assets/scene/loupe.png" alt="">
+          <span class="cout-objet">−10 s</span>
         </button>
         <!-- Plan de travail, sur la bande du bureau : [4 feuilles d'orientation] [tampon] -->
         <div id="plan" class="plan verrouille">
@@ -130,6 +140,10 @@
     <div id="dossier" class="modale" role="dialog" aria-modal="true" aria-labelledby="dossier-titre">
       <div class="modale-contenu visionneuse">
         <h2 id="dossier-titre"></h2>
+        <div class="outils-document">
+          <button id="btn-examiner-document" aria-pressed="false">Examiner à la loupe (−10 s)</button>
+          <span id="document-indication" role="status"></span>
+        </div>
         <div id="dossier-contenu" class="document-grand"></div>
         <div class="navigation-docs">
           <button id="doc-precedent" aria-label="Document précédent">‹</button>
@@ -143,13 +157,14 @@
     <div id="papi" class="modale" role="dialog" aria-modal="true" aria-labelledby="papi-titre">
       <div class="modale-contenu appel">
         <img src="assets/papi.svg" alt="" class="papi-avatar">
-        <h2 id="papi-titre">Papi</h2>
+        <h2 id="papi-titre">Papi Papier</h2>
         <p id="papi-statut" class="papi-statut"></p>
         <p id="papi-message" class="bulle-papi"></p>
         <button class="btn-fermer btn-raccrocher">Raccrocher</button>
       </div>
     </div>
   </div>
+  <div id="chrono-modale" class="chrono-modale" role="timer" hidden></div>
   <script src="js/cas.js"></script>
   <script src="js/jeu.js"></script>
 </body>

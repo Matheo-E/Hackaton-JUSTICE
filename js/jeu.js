@@ -31,6 +31,65 @@ function nomDuMode(id) {
   return m ? m.nom : id;
 }
 
+// Une échéance réelle évite de gagner du temps en changeant d'onglet.
+const DUREE_DOSSIER = 5 * 60;
+const COUT_APPEL = 20;
+const COUT_LOUPE = 10;
+let minuterieChrono = null;
+
+function arreterChrono() {
+  clearInterval(minuterieChrono);
+  minuterieChrono = null;
+}
+
+function demarrerChrono() {
+  arreterChrono();
+  etat.echeance = Date.now() + DUREE_DOSSIER * 1000;
+  etat.penalites = 0;
+  etat.appels = 0;
+  etat.documentsExamines = new Set();
+  etat.docOuvert = 0;
+  etat.loupeActive = false;
+  $("chrono-penalite").textContent = "";
+  $("loupe").disabled = !etat.docs.length;
+  actualiserChrono();
+  minuterieChrono = setInterval(actualiserChrono, 250);
+}
+
+function actualiserChrono() {
+  if (etat.decision || !$("ecran-visiteur").classList.contains("actif")) return false;
+  etat.tempsRestant = Math.max(0, Math.ceil((etat.echeance - Date.now()) / 1000));
+  const minutes = Math.floor(etat.tempsRestant / 60);
+  $("chrono").textContent = `${String(minutes).padStart(2, "0")}:${String(etat.tempsRestant % 60).padStart(2, "0")}`;
+  $("chrono").classList.toggle("urgent", etat.tempsRestant <= 30);
+  $("chrono-modale").textContent = `Temps restant : ${$("chrono").textContent}`;
+  $("chrono-modale").classList.toggle("urgent", etat.tempsRestant <= 30);
+  if (!etat.tempsRestant) { tempsEcoule(); return false; }
+  return true;
+}
+
+function consommerTemps(secondes, objet) {
+  if (!actualiserChrono()) return false;
+  etat.echeance -= secondes * 1000;
+  etat.penalites += secondes;
+  $("chrono-penalite").textContent = `${objet} : −${secondes} s`;
+  return actualiserChrono();
+}
+
+function tempsEcoule() {
+  if (etat.decision) return;
+  etat.decision = true;
+  arreterChrono();
+  arreterEcriture();
+  fermerModales();
+  const cas = etat.cas[etat.index];
+  etat.resultats.push({ cas, choix: null, correct: false, expire: true,
+    indices: etat.indicesObtenus, questions: etat.posees.size,
+    penalites: etat.penalites, tempsRestant: 0, appels: etat.appels,
+    documentsExamines: etat.documentsExamines.size });
+  afficherFeedback(cas, null, false);
+}
+
 // Chargement des données (cas + manuel), séparées du code.
 async function charger() {
   try {
@@ -180,6 +239,7 @@ function afficherCas() {
   creerQuestions();
   afficherEcran("ecran-visiteur");
   afficherReplique();
+  demarrerChrono();
 }
 
 // Affiche la réplique courante : bulle au-dessus de celui (ou ceux) qui parle(nt),
@@ -242,6 +302,7 @@ function arreterEcriture() {
 // Un clic pendant l'écriture affiche tout le texte d'un coup ;
 // sinon il passe à la réplique suivante ; un clic de plus après la dernière efface la bulle.
 function repliqueSuivante() {
+  if (!actualiserChrono()) return;
   if (ecriture) { arreterEcriture(); return; }
   if (etat.pos < etat.file.length) { etat.pos++; afficherReplique(); }
 }
@@ -263,6 +324,7 @@ function creerQuestions() {
 }
 
 function poserQuestion(i, bouton) {
+  if (!actualiserChrono()) return;
   if (etat.pos < etat.file.length) return; // quelqu'un parle encore
   const q = etat.cas[etat.index].questions[i];
   etat.posees.add(i);
@@ -284,6 +346,7 @@ function htmlDocument(d) {
 }
 
 function choisirPersonnage(nom) {
+  if (!actualiserChrono()) return;
   etat.selection = nom;
   document.querySelectorAll(".visiteur").forEach((v) => {
     const choisi = v.dataset.nom === nom;
@@ -301,8 +364,12 @@ function remplirDossier() {
   etat.docs = etat.selection
     ? cas.documents.filter((d) => !d.proprietaires.length || d.proprietaires.includes(etat.selection))
     : [];
+  etat.docOuvert = 0;
+  etat.loupeActive = false;
+  $("loupe").disabled = !etat.docs.length;
   $("titre-documents").textContent = etat.selection ? `Documents de ${etat.selection}` : "Documents du client";
   if (!etat.selection) pile.innerHTML = `<p class="vide">Cliquez sur un personnage pour voir ses documents.</p>`;
+  else if (!etat.docs.length) pile.innerHTML = `<p class="vide">Ce personnage n’a apporté aucun document.</p>`;
   etat.docs.forEach((d, i) => {
     const b = document.createElement("button");
     b.className = "miniature";
@@ -314,15 +381,48 @@ function remplirDossier() {
 }
 
 function ouvrirDocument(i) {
+  if (!actualiserChrono()) return;
   const docs = etat.docs;
   if (!docs.length) return;
   etat.docOuvert = (i + docs.length) % docs.length;
   const d = docs[etat.docOuvert];
   $("dossier-titre").textContent = d.titre;
-  $("dossier-contenu").innerHTML = htmlDocument(d);
+  const examine = etat.documentsExamines.has(etat.docs[etat.docOuvert]);
+  etat.loupeActive = examine;
+  $("dossier-contenu").innerHTML = `<div class="document-zoom">${htmlDocument(d)}</div>${d.detail
+    ? `<aside class="mention-document"><span>Mention en petits caractères</span><p class="detail-minuscule" ${examine ? "" : 'aria-hidden="true"'}>${echapper(d.detail)}</p></aside>` : ""}`;
+  actualiserLoupe();
   $("doc-position").textContent = `${etat.docOuvert + 1} / ${docs.length}`;
   $("doc-precedent").hidden = $("doc-suivant").hidden = docs.length < 2;
   if (!$("dossier").classList.contains("ouvert")) ouvrirModale("dossier");
+}
+
+function actualiserLoupe() {
+  const examine = etat.documentsExamines.has(etat.docs[etat.docOuvert]);
+  $("dossier-contenu").classList.toggle("document-examine", etat.loupeActive);
+  $("btn-examiner-document").setAttribute("aria-pressed", String(etat.loupeActive));
+  $("btn-examiner-document").textContent = etat.loupeActive
+    ? "Reposer la loupe" : examine ? "Reprendre la loupe (déjà examiné)" : "Examiner à la loupe (−10 s)";
+  $("document-indication").textContent = etat.loupeActive
+    ? "Vue agrandie : faites défiler le document pour lire les détails." : "Utilisez la loupe pour lire les petits caractères.";
+  const detail = $("dossier-contenu").querySelector(".detail-minuscule");
+  if (detail) detail.setAttribute("aria-hidden", String(!etat.loupeActive));
+}
+
+function examinerDocument() {
+  if (!actualiserChrono() || !$("dossier").classList.contains("ouvert")) return;
+  if (!etat.loupeActive && !etat.documentsExamines.has(etat.docs[etat.docOuvert])) {
+    if (!consommerTemps(COUT_LOUPE, "Loupe")) return;
+    etat.documentsExamines.add(etat.docs[etat.docOuvert]);
+  }
+  etat.loupeActive = !etat.loupeActive;
+  actualiserLoupe();
+}
+
+function prendreLoupe() {
+  if (!actualiserChrono() || !etat.docs.length) return;
+  ouvrirDocument(etat.docOuvert || 0);
+  if (!etat.loupeActive) examinerDocument();
 }
 
 // Récap : tout ce qui a été dit jusqu'ici + les indices déjà obtenus.
@@ -342,6 +442,9 @@ function remplirSituation() {
 // Téléphone : chaque appel donne l'indice suivant.
 let minuterieAppel;
 function appelerPapi() {
+  if (!actualiserChrono()) return;
+  etat.appels++;
+  if (!consommerTemps(COUT_APPEL, "Téléphone")) return;
   const cas = etat.cas[etat.index];
   clearTimeout(minuterieAppel);
   $("papi-message").hidden = true;
@@ -357,6 +460,7 @@ function appelerPapi() {
   $("papi-statut").textContent = "Appel en cours…";
   $("papi").classList.add("sonne");
   minuterieAppel = setTimeout(() => {
+    if (etat.decision) return;
     $("papi").classList.remove("sonne");
     const indice = cas.indices[etat.indicesObtenus++];
     $("papi-statut").textContent = `Indice ${etat.indicesObtenus} / ${cas.indices.length}`;
@@ -372,12 +476,16 @@ const DUREE_COUP_TAMPON = 1300; // ms : coup de tampon + sceau visible avant le 
 // Le tampon a été déposé sur la feuille d'un mode : on frappe, on laisse le sceau, puis feedback.
 function tamponner(modeId, feuille) {
   if (etat.decision || $("plan").classList.contains("verrouille")) return; // un seul coup par dossier
+  if (!actualiserChrono()) return;
   etat.decision = true;
+  arreterChrono();
   const cas = etat.cas[etat.index];
   const correct = modeId === cas.reponse;
   arreterEcriture();
   fermerModales();
-  etat.resultats.push({ cas, choix: modeId, correct, indices: etat.indicesObtenus, questions: etat.posees.size });
+  etat.resultats.push({ cas, choix: modeId, correct, indices: etat.indicesObtenus, questions: etat.posees.size,
+    penalites: etat.penalites, tempsRestant: etat.tempsRestant, appels: etat.appels,
+    documentsExamines: etat.documentsExamines.size });
 
   // Animation : le tampon frappe (classe .frappe), la feuille reçoit le sceau.
   feuille.querySelector(".sceau").src = SCEAU[correct ? "bonne" : "mauvaise"];
@@ -393,9 +501,11 @@ function afficherFeedback(cas, modeId, correct) {
   $("feedback-sceau").src = SCEAU[correct ? "bonne" : "mauvaise"];
   $("feedback-sceau").alt = correct ? "Certifié" : "Refusé";
 
-  $("feedback-titre").textContent = correct ? "Bonne orientation !" : "Mauvaise orientation";
+  $("feedback-titre").textContent = modeId === null ? "Temps écoulé !" : correct ? "Bonne orientation !" : "Mauvaise orientation";
   $("feedback-titre").className = correct ? "bonne" : "mauvaise";
-  $("feedback-reponse").innerHTML = correct
+  $("feedback-reponse").innerHTML = modeId === null
+    ? `Ce dossier n’a pas été traité à temps. La bonne orientation était : <b>${echapper(nomDuMode(cas.reponse))}</b>.`
+    : correct
     ? `Vous avez choisi : <b>${echapper(nomDuMode(modeId))}</b>.`
     : `Vous avez choisi : <b>${echapper(nomDuMode(modeId))}</b>. La bonne réponse était : <b>${echapper(nomDuMode(cas.reponse))}</b>.`;
   $("feedback-explication").textContent = cas.explication;
@@ -416,6 +526,7 @@ function afficherRecap() {
   $("recap-liste").innerHTML = etat.resultats
     .map((r) => `<li class="${r.correct ? "ok" : "ko"}">
         <b>${echapper(r.cas.personnages.map((p) => p.nom).join(" & "))}</b> → ${echapper(nomDuMode(r.cas.reponse))}<br>
+        <small>${r.expire ? "Temps écoulé — dossier non traité" : `${r.tempsRestant} s restantes`} · Bonus : −${r.penalites} s (${r.appels} appel(s), ${r.documentsExamines} document(s) examiné(s))</small>
         ${r.cas.questions.length ? `<small>Questions posées : ${r.questions} / ${r.cas.questions.length}</small>` : ""}
         ${r.cas.indices.length ? `<small>Conseils de Papi utilisés : ${r.indices} / ${r.cas.indices.length}</small>` : ""}
         <small>${echapper(r.cas.explication)}</small></li>`)
@@ -429,13 +540,17 @@ function afficherRecap() {
 const AVANT_OUVERTURE = { situation: remplirSituation, papi: appelerPapi };
 
 function ouvrirModale(id) {
+  if (!actualiserChrono()) return;
   fermerModales();
   if (AVANT_OUVERTURE[id]) AVANT_OUVERTURE[id]();
+  if (etat.decision) return; // une pénalité peut épuiser le temps restant
   $(id).classList.add("ouvert");
+  $("chrono-modale").hidden = false;
   $(id).querySelector(".btn-fermer").focus();
 }
 function fermerModales() {
   clearTimeout(minuterieAppel);
+  $("chrono-modale").hidden = true;
   document.querySelectorAll(".modale.ouvert").forEach((m) => m.classList.remove("ouvert", "sonne"));
 }
 
@@ -451,6 +566,8 @@ document.addEventListener("keydown", (e) => {
 });
 $("doc-precedent").addEventListener("click", () => ouvrirDocument(etat.docOuvert - 1));
 $("doc-suivant").addEventListener("click", () => ouvrirDocument(etat.docOuvert + 1));
+$("loupe").addEventListener("click", (e) => { e.stopPropagation(); prendreLoupe(); });
+$("btn-examiner-document").addEventListener("click", examinerDocument);
 
 // Faire avancer le dialogue : clic sur la scène, Entrée ou Espace.
 $("scene").addEventListener("click", repliqueSuivante);
